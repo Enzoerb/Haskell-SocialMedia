@@ -1,0 +1,33 @@
+# Haskell
+**/dist/
+**/dist-newstyle/
+**/cabal.project.local
+**/.stack-work/
+
+# PureScript
+**/bower_components/
+**/node_modules/
+**/.pulp-cache/
+**/output/
+**/generated-docs/
+**/.psc-package/
+**/.psc*
+**/.purs*
+**/.psa*
+**/.spago
+**/output/*.js
+**/psc-package.json
+**/bower_modules/
+**/pulp_modules
+
+# Docker
+.docker/
+docker-compose.override.yml
+
+# PostgreSQL
+*.psql
+*.sql
+
+# Editors
+.vscode/
+.projectile/
