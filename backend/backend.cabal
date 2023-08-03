@@ -22,7 +22,10 @@ maintainer:         enzoerbert@gmail.com
 extra-source-files: CHANGELOG.md
 
 executable backend
-    main-is:          Main.hs
+    main-is:             Main.hs
+    hs-source-dirs:      app, src
+    other-modules:       Migrations
+                         Schema
 
     -- Modules included in this executable, other than Main.
     -- other-modules:
@@ -30,9 +33,9 @@ executable backend
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:
     build-depends:
-        base ^>=4.16.4.0,
-        servant,
-        servant-server,
-        postgresql-simple
-    hs-source-dirs:   app
+        base >= 4.14 && < 5
+        , postgresql-simple
+        , time
+        , uuid
+        , bytestring
     default-language: Haskell2010
