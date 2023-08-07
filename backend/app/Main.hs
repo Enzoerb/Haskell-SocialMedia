@@ -2,6 +2,7 @@
 module Main where
 
 import qualified Database.PostgreSQL.Simple as PGSimple
+import qualified Repository.UserRepository as UserRepo
 import qualified Migrations
 
 main :: IO ()
@@ -18,5 +19,6 @@ main = do
   -- Create tables if they don't exist
   Migrations.createTables conn
 
+  UserRepo.main
   -- Close the connection
   PGSimple.close conn
