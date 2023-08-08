@@ -15,7 +15,7 @@ upgradeUser conn newUser username = do
   maybeUserByUsername <- UserRepo.getUsersByUsername conn username
   case maybeUserByUsername of
     Just oldUser -> do
-      let _ = UserRepo.updateUser conn (UserRepo.UserUpdate (userUserId oldUser) username (firstName newUser) (lastName newUser) (email newUser) (password newUser))
+      let _ = UserRepo.updateUser conn (Schema.UserUpdate (userUserId oldUser) username (firstName newUser) (lastName newUser) (email newUser) (password newUser))
       UserRepo.getUsersById conn (userUserId oldUser)
     Nothing -> return Nothing
 
