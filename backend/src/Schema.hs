@@ -95,8 +95,8 @@ data Follow = Follow
   }
   deriving (Show, Generic)
 
-instance ToJSON UserInsert
-instance FromJSON UserInsert
+instance ToJSON Follow
+instance FromJSON Follow
 
 instance PGToRow.ToRow Follow where
   toRow follow =
@@ -128,8 +128,8 @@ data Post = Post
   }
   deriving (Show, Generic)
 
-instance ToJSON UserInsert
-instance FromJSON UserInsert
+instance ToJSON Post
+instance FromJSON Post
 
 
 instance PGToRow.ToRow Post where
@@ -158,8 +158,8 @@ data PostUpdate = PostUpdate
   }
   deriving (Show, Generic)
 
-instance ToJSON UserInsert
-instance FromJSON UserInsert
+instance ToJSON PostUpdate
+instance FromJSON PostUpdate
 
 data PostInsert = PostInsert
   { insertPostUserId  :: UUID
@@ -168,5 +168,5 @@ data PostInsert = PostInsert
   }
   deriving (Show, Generic)
 
-instance ToJSON UserInsert
-instance FromJSON UserInsert
+instance ToJSON PostInsert
+instance FromJSON PostInsert

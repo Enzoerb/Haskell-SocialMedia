@@ -25,17 +25,6 @@ import qualified Database.PostgreSQL.Simple.Types as PGTypes
 import Utils.PasswordEncryption (encryptPassword)
 import Schema
 
-instance PGFromRow.FromRow Schema.User where
-  fromRow = Schema.User
-    <$> PGFromRow.field  -- userUserId
-    <*> PGFromRow.field  -- username
-    <*> PGFromRow.field  -- firstName
-    <*> PGFromRow.field  -- lastName
-    <*> PGFromRow.field  -- email
-    <*> PGFromRow.field  -- password
-    <*> PGFromRow.field  -- useerCreatedAt
-    <*> PGFromRow.field  -- userUpdatedAt
-
 instance PGToRow.ToRow UUID where
   toRow uuid = [PGToField.toField uuid]
 
