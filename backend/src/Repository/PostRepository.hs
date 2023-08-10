@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE DeriveAnyClass #-}
 
-module Repository.UserRepository where
+module Repository.PostRepository where
 
 import Control.Monad (void)
 import Control.Monad.IO.Class (liftIO)
@@ -67,19 +67,11 @@ getPostById conn postId = do
 
 
 getPostByUserId :: PGSimple.Connection -> UUID -> IO [Schema.Post]
-getPostByUserId conn userId = do
-  result <- PGSimple.query conn "SELECT * FROM post WHERE user_id = ?" (PGTypes.Only userId)
-  case result of
-    [user] -> return $ Just user
-    _      -> return Nothing
+getPostByUserId conn userId = PGSimple.query conn "SELECT * FROM post WHERE user_id = ?" (userId)
 
 
-getPostByFollows :: PGSimple.Connection -> [UUID] -> IO [Schema.Post]
-getPostByFollows conn userId = do
-  result <- PGSimple.query conn "SELECT * FROM post WHERE user_id in (SELECT followed_id as user_id FROM follow WHERE follower_id = ?)" (PGTypes.Only userId)
-  case result of
-    [user] -> return $ Just user
-    _      -> return Nothing
+getPostByFollows :: PGSimple.Connection -> UUID -> IO [Schema.Post]
+getPostByFollows conn userId = PGSimple.query conn "SELECT * FROM post WHERE user_id in (SELECT followed_id as user_id FROM follow WHERE follower_id = ?)" (userId)
 
 
 getAllPosts :: PGSimple.Connection -> IO [Schema.Post]

@@ -29,7 +29,9 @@ executable backend
                          API
                          Utils.PasswordEncryption
                          Repository.UserRepository
+                         Repository.PostRepository
                          Service.UserService
+                         Service.PostService
                          Controller.UserController
 
     -- Modules included in this executable, other than Main.
