@@ -50,7 +50,7 @@ deletePost conn postId = do
 insertPost :: PGSimple.Connection -> Schema.PostInsert -> IO ()
 insertPost conn (Schema.PostInsert insertPostUserId insertContent insertPostType) = do
   let queryString =
-        "INSERT INTO post (id, user_id, content, post_type, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+        "INSERT INTO post (id, user_id, content, post_type, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)"
 
   createdAt <- getCurrentTime
   updatedAt <- getCurrentTime
@@ -71,7 +71,7 @@ getPostByUserId conn userId = PGSimple.query conn "SELECT * FROM post WHERE user
 
 
 getPostByFollows :: PGSimple.Connection -> UUID -> IO [Schema.Post]
-getPostByFollows conn userId = PGSimple.query conn "SELECT * FROM post WHERE user_id in (SELECT followed_id as user_id FROM follow WHERE follower_id = ?)" (userId)
+getPostByFollows conn userId = PGSimple.query conn "SELECT * FROM post WHERE user_id in (SELECT user_followed_id as user_id FROM follow WHERE user_follower_id = ?)" (userId)
 
 
 getAllPosts :: PGSimple.Connection -> IO [Schema.Post]
