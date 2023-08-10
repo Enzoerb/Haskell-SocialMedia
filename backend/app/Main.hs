@@ -29,7 +29,13 @@ main = do
   -- Run the Servant server
   putStrLn "Running server on port 8080..."
   hFlush stdout  -- Flush the buffer to ensure immediate display
-  run 8080 (serve API.api (UserController.getAllUsersHandler conn :<|> UserController.getUserByUsernameHandler conn))
+  run 8080 (serve API.api (UserController.getAllUsersHandler conn
+                           :<|> UserController.getUserByUsernameHandler conn
+                           :<|> UserController.getUserByEmailHandler conn
+                           :<|> UserController.getUserByIdHandler conn
+                           :<|> UserController.insertUserHandler conn
+                           :<|> UserController.updateUserHandler conn
+                           :<|> UserController.deleteUserHandler conn))
 
   -- Close the connection
   PGSimple.close conn

@@ -7,17 +7,11 @@ import qualified Repository.UserRepository as UserRepo
 import Database.PostgreSQL.Simple (Connection)
 import Schema
 
-insertUser :: Connection -> Schema.User -> IO ()
-insertUser conn user = UserRepo.insertUser conn user
+insertUser :: Connection -> Schema.UserInsert -> IO ()
+insertUser conn insertUser = UserRepo.insertUser conn insertUser
 
-upgradeUser :: Connection -> Schema.User -> String -> IO (Maybe Schema.User)
-upgradeUser conn newUser username = do
-  maybeUserByUsername <- UserRepo.getUsersByUsername conn username
-  case maybeUserByUsername of
-    Just oldUser -> do
-      let _ = UserRepo.updateUser conn (Schema.UserUpdate (userUserId oldUser) username (firstName newUser) (lastName newUser) (email newUser) (password newUser))
-      UserRepo.getUsersById conn (userUserId oldUser)
-    Nothing -> return Nothing
+updateUser :: Connection -> Schema.UserUpdate -> IO ()
+updateUser conn updatedUser = UserRepo.updateUser conn updatedUser
 
 deleteUser :: Connection -> UUID -> IO ()
 deleteUser conn userId = UserRepo.deleteUser conn userId

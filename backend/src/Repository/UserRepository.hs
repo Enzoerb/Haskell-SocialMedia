@@ -22,6 +22,7 @@ import qualified Database.PostgreSQL.Simple.FromRow as PGFromRow
 import qualified Database.PostgreSQL.Simple.ToField as PGToField
 import qualified Database.PostgreSQL.Simple.ToRow as PGToRow
 import qualified Database.PostgreSQL.Simple.Types as PGTypes
+import Utils.PasswordEncryption (encryptPassword)
 import Schema
 
 instance PGFromRow.FromRow Schema.User where
@@ -35,40 +36,20 @@ instance PGFromRow.FromRow Schema.User where
     <*> PGFromRow.field  -- useerCreatedAt
     <*> PGFromRow.field  -- userUpdatedAt
 
-instance PGToRow.ToRow Schema.User where
-  toRow user =
-    [ PGToField.toField (Schema.userUserId user)
-    , PGToField.toField (Schema.username user)
-    , PGToField.toField (Schema.firstName user)
-    , PGToField.toField (Schema.lastName user)
-    , PGToField.toField (Schema.email user)
-    , PGToField.toField (Schema.password user)
-    , PGToField.toField (formatUTCTime $ Schema.userCreatedAt user)
-    , PGToField.toField (formatUTCTime $ Schema.userUpdatedAt user)
-    ]
-
 instance PGToRow.ToRow UUID where
   toRow uuid = [PGToField.toField uuid]
 
 instance PGToField.ToField Char where
   toField = PGToField.toField . T.pack . (:[])
 
-parseUTCTime :: String -> UTCTime
-parseUTCTime input = case TimeFormat.parseTimeM True TimeFormat.defaultTimeLocale "%Y-%m-%d %H:%M:%S%Q" input of
-  Just time -> time
-  Nothing -> error "Failed to parse UTCTime"
-
-
-formatUTCTime :: UTCTime -> String
-formatUTCTime = formatTime TimeFormat.defaultTimeLocale "%Y-%m-%d %H:%M:%S%Q"
-
-
 updateUser :: PGSimple.Connection -> Schema.UserUpdate -> IO ()
-updateUser conn (Schema.UserUpdate userId newUsername newFirstName newLastName newEmail newPassword) = do
+updateUser conn (Schema.UserUpdate oldUserId newUsername newFirstName newLastName newEmail newPassword) = do
     let queryString =
-            "UPDATE users SET username = ?, first_name = ?, last_name = ?, email = ?, password = ? WHERE id = ?"
+            "UPDATE users SET username = ?, first_name = ?, last_name = ?, email = ?, password = ?, updated_at = ? WHERE id = ?"
+    updatedAt <- getCurrentTime
+    let encryptedPassowrd = encryptPassword newPassword
+    void $ PGSimple.execute conn queryString (newUsername, newFirstName, newLastName, newEmail, encryptedPassowrd, updatedAt, oldUserId)
 
-    void $ PGSimple.execute conn queryString (newUsername, newFirstName, newLastName, newEmail, newPassword, userId)
 
 deleteUser :: PGSimple.Connection -> UUID -> IO ()
 deleteUser conn userId = do
@@ -78,12 +59,16 @@ deleteUser conn userId = do
   void $ PGSimple.execute conn queryString userId
 
 
-insertUser :: PGSimple.Connection -> Schema.User -> IO ()
-insertUser conn user = do
+insertUser :: PGSimple.Connection -> Schema.UserInsert -> IO ()
+insertUser conn (Schema.UserInsert insertUsername insertFirstName insertLastName insertEmail insertPassword) = do
   let queryString =
         "INSERT INTO users (id, username, first_name, last_name, email, password, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
 
-  void $ PGSimple.execute conn queryString user
+  createdAt <- getCurrentTime
+  updatedAt <- getCurrentTime
+  userId <- nextRandom
+  let encryptedPassword = encryptPassword insertPassword
+  void $ PGSimple.execute conn queryString (userId, insertUsername, insertFirstName, insertLastName, insertEmail, encryptedPassword, createdAt, updatedAt)
 
 
 getUsersById :: PGSimple.Connection -> UUID -> IO (Maybe Schema.User)
