@@ -22,27 +22,8 @@ import qualified Database.PostgreSQL.Simple.FromRow as PGFromRow
 import qualified Database.PostgreSQL.Simple.ToField as PGToField
 import qualified Database.PostgreSQL.Simple.ToRow as PGToRow
 import qualified Database.PostgreSQL.Simple.Types as PGTypes
+import Utils.PasswordEncryption (encryptPassword)
 import Schema
-
-data UserUpdate = UserUpdate
-  { userId :: UUID
-  , newUsername :: String
-  , newFirstName :: String
-  , newLastName :: String
-  , newEmail :: String
-  , newPassword :: String
-  }
-
-instance Show Schema.User where
-  show user = "User { userUserId = " ++ show (Schema.userUserId user)
-              ++ ", username = " ++ show (Schema.username user)
-              ++ ", firstName = " ++ show (Schema.firstName user)
-              ++ ", lastName = " ++ show (Schema.lastName user)
-              ++ ", email = " ++ show (Schema.email user)
-              ++ ", password = " ++ show (Schema.password user)
-              ++ ", userCreatedAt = " ++ show (Schema.userCreatedAt user)
-              ++ ", userUpdatedAt = " ++ show (Schema.userUpdatedAt user)
-              ++ " }"
 
 instance PGFromRow.FromRow Schema.User where
   fromRow = Schema.User
@@ -55,40 +36,20 @@ instance PGFromRow.FromRow Schema.User where
     <*> PGFromRow.field  -- useerCreatedAt
     <*> PGFromRow.field  -- userUpdatedAt
 
-instance PGToRow.ToRow Schema.User where
-  toRow user =
-    [ PGToField.toField (Schema.userUserId user)
-    , PGToField.toField (Schema.username user)
-    , PGToField.toField (Schema.firstName user)
-    , PGToField.toField (Schema.lastName user)
-    , PGToField.toField (Schema.email user)
-    , PGToField.toField (Schema.password user)
-    , PGToField.toField (formatUTCTime $ Schema.userCreatedAt user)
-    , PGToField.toField (formatUTCTime $ Schema.userUpdatedAt user)
-    ]
-
 instance PGToRow.ToRow UUID where
   toRow uuid = [PGToField.toField uuid]
 
 instance PGToField.ToField Char where
   toField = PGToField.toField . T.pack . (:[])
 
-parseUTCTime :: String -> UTCTime
-parseUTCTime input = case TimeFormat.parseTimeM True TimeFormat.defaultTimeLocale "%Y-%m-%d %H:%M:%S%Q" input of
-  Just time -> time
-  Nothing -> error "Failed to parse UTCTime"
-
-
-formatUTCTime :: UTCTime -> String
-formatUTCTime = formatTime TimeFormat.defaultTimeLocale "%Y-%m-%d %H:%M:%S%Q"
-
-
-updateUser :: PGSimple.Connection -> UserUpdate -> IO ()
-updateUser conn (UserUpdate userId newUsername newFirstName newLastName newEmail newPassword) = do
+updateUser :: PGSimple.Connection -> Schema.UserUpdate -> IO ()
+updateUser conn (Schema.UserUpdate oldUserId newUsername newFirstName newLastName newEmail newPassword) = do
     let queryString =
-            "UPDATE users SET username = ?, first_name = ?, last_name = ?, email = ?, password = ? WHERE id = ?"
+            "UPDATE users SET username = ?, first_name = ?, last_name = ?, email = ?, password = ?, updated_at = ? WHERE id = ?"
+    updatedAt <- getCurrentTime
+    let encryptedPassowrd = encryptPassword newPassword
+    void $ PGSimple.execute conn queryString (newUsername, newFirstName, newLastName, newEmail, encryptedPassowrd, updatedAt, oldUserId)
 
-    void $ PGSimple.execute conn queryString (newUsername, newFirstName, newLastName, newEmail, newPassword, userId)
 
 deleteUser :: PGSimple.Connection -> UUID -> IO ()
 deleteUser conn userId = do
@@ -98,12 +59,16 @@ deleteUser conn userId = do
   void $ PGSimple.execute conn queryString userId
 
 
-insertUser :: PGSimple.Connection -> Schema.User -> IO ()
-insertUser conn user = do
+insertUser :: PGSimple.Connection -> Schema.UserInsert -> IO ()
+insertUser conn (Schema.UserInsert insertUsername insertFirstName insertLastName insertEmail insertPassword) = do
   let queryString =
         "INSERT INTO users (id, username, first_name, last_name, email, password, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
 
-  void $ PGSimple.execute conn queryString user
+  createdAt <- getCurrentTime
+  updatedAt <- getCurrentTime
+  userId <- nextRandom
+  let encryptedPassword = encryptPassword insertPassword
+  void $ PGSimple.execute conn queryString (userId, insertUsername, insertFirstName, insertLastName, insertEmail, encryptedPassword, createdAt, updatedAt)
 
 
 getUsersById :: PGSimple.Connection -> UUID -> IO (Maybe Schema.User)
@@ -132,81 +97,3 @@ getUsersByUsername conn username = do
 
 getAllUsers :: PGSimple.Connection -> IO [Schema.User]
 getAllUsers conn = PGSimple.query_ conn "SELECT * FROM users"
-
-
-main :: IO ()
-main = do
-  conn <- PGSimple.connect PGSimple.defaultConnectInfo
-      { PGSimple.connectHost = "postgres"
-      , PGSimple.connectPort = 5432
-      , PGSimple.connectUser = "postgres"
-      , PGSimple.connectPassword = "mysecretpassword"
-      , PGSimple.connectDatabase = "postgres"
-      }
-
-  -- deleteFromEmail
-  let targetUserEmail = "john.doe3@example.com"
-  maybeUserByEmail <- getUsersByEmail conn targetUserEmail
-  case maybeUserByEmail of
-    Just user -> do
-      -- Update the user's last name to "Silva"
-      deleteUser conn (userUserId user)
-    Nothing -> putStrLn "User not found"
-
-  -- Generate UUIDs and insert data
-  uuid1 <- nextRandom
-  currentTime <- getCurrentTime
-  let user1 = Schema.User
-          { Schema.userUserId = uuid1
-          , Schema.username = "user3"
-          , Schema.firstName = "John"
-          , Schema.lastName = "Doe"
-          , Schema.email = "john.doe3@example.com"
-          , Schema.password = "pass123"
-          , Schema.userCreatedAt = currentTime
-          , Schema.userUpdatedAt = currentTime
-          }
-
-  -- Insert more data as needed
-  insertUser conn user1
-
-  -- Fetch and print all users
-  allUsers <- getAllUsers conn
-  putStrLn "All Users:"
-  mapM_ print allUsers
-
-  -- Fetch and print user by ID
-  let targetUserId = fromJust $ UUID.fromString "f1c8e742-07e4-4d13-94ef-460c2886f937"
-  maybeUser <- getUsersById conn targetUserId
-  putStrLn "User by ID:"
-  case maybeUser of
-    Just user -> print user
-    Nothing -> putStrLn "User not found"
-
-  -- updateLastName
-  let targetUserEmail = "john.doe@example.com"
-  maybeUserByEmail <- getUsersByEmail conn targetUserEmail
-  case maybeUserByEmail of
-    Just user -> do
-      -- Update the user's last name to "Silva"
-      let updatedUser = user { lastName = "Silva" }
-      updateUser conn (UserUpdate (userUserId user) (username user) (firstName user) (lastName updatedUser) (email user) (password user))
-    Nothing -> putStrLn "User not found"
-
-  -- By Email
-  let targetUserEmail = "john.doe@example.com"
-  maybeUser <- getUsersByEmail conn targetUserEmail
-  putStrLn "User by Email:"
-  case maybeUser of
-    Just user -> print user
-    Nothing -> putStrLn "User not found"
-
-   -- By Email
-  let targetUserUsername = "user2"
-  maybeUser <- getUsersByUsername conn targetUserUsername
-  putStrLn "User by Email:"
-  case maybeUser of
-    Just user -> print user
-    Nothing -> putStrLn "User not found"
-
-  PGSimple.close conn

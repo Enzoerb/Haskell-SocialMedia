@@ -31,3 +31,4 @@ docker-compose.override.yml
 # Editors
 .vscode/
 .projectile/
+**/.DS_Store

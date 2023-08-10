@@ -1,9 +1,16 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Main where
 
+import Servant
+import Servant.API
+import Data.Text (Text)
+import Data.Aeson (ToJSON, FromJSON)
+import Network.Wai.Handler.Warp (run)
+import API (api)
 import qualified Database.PostgreSQL.Simple as PGSimple
-import qualified Repository.UserRepository as UserRepo
+import qualified Controller.UserController as UserController
 import qualified Migrations
+import System.IO (hFlush, stdout)
 
 main :: IO ()
 main = do
@@ -19,6 +26,16 @@ main = do
   -- Create tables if they don't exist
   Migrations.createTables conn
 
-  UserRepo.main
+  -- Run the Servant server
+  putStrLn "Running server on port 8080..."
+  hFlush stdout  -- Flush the buffer to ensure immediate display
+  run 8080 (serve API.api (UserController.getAllUsersHandler conn
+                           :<|> UserController.getUserByUsernameHandler conn
+                           :<|> UserController.getUserByEmailHandler conn
+                           :<|> UserController.getUserByIdHandler conn
+                           :<|> UserController.insertUserHandler conn
+                           :<|> UserController.updateUserHandler conn
+                           :<|> UserController.deleteUserHandler conn))
+
   -- Close the connection
   PGSimple.close conn
