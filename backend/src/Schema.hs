@@ -115,6 +115,14 @@ instance PGFromRow.FromRow Schema.Follow where
     <*> PGFromRow.field  -- postCreatedAt
     <*> PGFromRow.field  -- postUpdatedAt
 
+data FollowInsert = FollowInsert
+  { insertUserFollowedId    :: UUID
+  , insertUserFollowerId     :: UUID
+  }
+  deriving (Show, Generic)
+
+instance ToJSON FollowInsert
+instance FromJSON FollowInsert
 
 -- Post
 

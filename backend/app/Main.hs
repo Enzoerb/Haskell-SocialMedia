@@ -10,6 +10,7 @@ import API (api)
 import qualified Database.PostgreSQL.Simple as PGSimple
 import qualified Controller.UserController as UserController
 import qualified Controller.PostController as PostController
+import qualified Controller.FollowController as FollowController
 import qualified Migrations
 import System.IO (hFlush, stdout)
 
@@ -44,6 +45,10 @@ main = do
                            :<|> PostController.insertPostHandler conn
                            :<|> PostController.updatePostHandler conn
                            :<|> PostController.deletePostHandler conn
+                           :<|> FollowController.getFollowingHandler conn
+                           :<|> FollowController.getFollowerHandler conn
+                           :<|> FollowController.insertFollowHandler conn
+                           :<|> FollowController.deleteFollowHandler conn
                           ))
 
   -- Close the connection
