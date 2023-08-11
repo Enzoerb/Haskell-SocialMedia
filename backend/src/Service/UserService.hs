@@ -8,7 +8,7 @@ import Database.PostgreSQL.Simple (Connection)
 import Schema
 
 insertUser :: Connection -> Schema.UserInsert -> IO ()
-insertUser conn insertUser = UserRepo.insertUser conn insertUser
+insertUser conn userToInsert = UserRepo.insertUser conn userToInsert
 
 updateUser :: Connection -> Schema.UserUpdate -> IO ()
 updateUser conn updatedUser = UserRepo.updateUser conn updatedUser

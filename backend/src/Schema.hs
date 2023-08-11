@@ -6,6 +6,7 @@ import Data.UUID (UUID)
 import Data.Time.Clock (UTCTime)
 import Data.Time (UTCTime, getCurrentTime, formatTime)
 import Data.Aeson (ToJSON, FromJSON, toJSON, object, (.=))
+import qualified Database.PostgreSQL.Simple.FromRow as PGFromRow
 import qualified Database.PostgreSQL.Simple.ToRow as PGToRow
 import qualified Database.PostgreSQL.Simple.ToField as PGToField
 import qualified Data.Time.Format as TimeFormat
@@ -45,6 +46,16 @@ instance PGToRow.ToRow User where
     , PGToField.toField (formatUTCTime $ userUpdatedAt user)
     ]
 
+instance PGFromRow.FromRow Schema.User where
+  fromRow = Schema.User
+    <$> PGFromRow.field  -- userUserId
+    <*> PGFromRow.field  -- username
+    <*> PGFromRow.field  -- firstName
+    <*> PGFromRow.field  -- lastName
+    <*> PGFromRow.field  -- email
+    <*> PGFromRow.field  -- password
+    <*> PGFromRow.field  -- useerCreatedAt
+    <*> PGFromRow.field  -- userUpdatedAt
 
 data UserUpdate = UserUpdate
   { oldUserId        :: UUID
@@ -82,15 +93,10 @@ data Follow = Follow
   , followCreatedAt :: UTCTime
   , followUpdatedAt :: UTCTime
   }
+  deriving (Show, Generic)
 
-instance ToJSON Follow where
-  toJSON follow = object
-    [ "followId"        .= followId follow
-    , "userFollowedId"  .= userFollowedId follow
-    , "userFollowerId"  .= userFollowerId follow
-    , "userCreatedAt"   .= followCreatedAt follow
-    , "userUpdatedAt"   .= followUpdatedAt follow
-    ]
+instance ToJSON Follow
+instance FromJSON Follow
 
 instance PGToRow.ToRow Follow where
   toRow follow =
@@ -100,6 +106,15 @@ instance PGToRow.ToRow Follow where
     , PGToField.toField (formatUTCTime $ followCreatedAt follow)
     , PGToField.toField (formatUTCTime $ followUpdatedAt follow)
     ]
+
+instance PGFromRow.FromRow Schema.Follow where
+  fromRow = Schema.Follow
+    <$> PGFromRow.field  -- followId
+    <*> PGFromRow.field  -- userFollowedId
+    <*> PGFromRow.field  -- userFollowerId
+    <*> PGFromRow.field  -- postCreatedAt
+    <*> PGFromRow.field  -- postUpdatedAt
+
 
 -- Post
 
@@ -111,16 +126,11 @@ data Post = Post
   , postCreatedAt :: UTCTime
   , postUpdatedAt :: UTCTime
   }
+  deriving (Show, Generic)
 
-instance ToJSON Post where
-  toJSON post = object
-    [ "postId"          .= postId post
-    , "postUserId"      .= postUserId post
-    , "content"         .= content post
-    , "postType"        .= postType post
-    , "postCreatedAt"   .= postCreatedAt post
-    , "postUpdatedAt"   .= postUpdatedAt post
-    ]
+instance ToJSON Post
+instance FromJSON Post
+
 
 instance PGToRow.ToRow Post where
   toRow post =
@@ -132,8 +142,31 @@ instance PGToRow.ToRow Post where
     , PGToField.toField (formatUTCTime $ postUpdatedAt post)
     ]
 
+instance PGFromRow.FromRow Schema.Post where
+  fromRow = Schema.Post
+    <$> PGFromRow.field  -- postId
+    <*> PGFromRow.field  -- postUserId
+    <*> PGFromRow.field  -- content
+    <*> PGFromRow.field  -- postType
+    <*> PGFromRow.field  -- postCreatedAt
+    <*> PGFromRow.field  -- postUpdatedAt
+
 data PostUpdate = PostUpdate
   { oldPostId      :: UUID
   , newContent     :: String
   , newPostType    :: String
   }
+  deriving (Show, Generic)
+
+instance ToJSON PostUpdate
+instance FromJSON PostUpdate
+
+data PostInsert = PostInsert
+  { insertPostUserId  :: UUID
+  , insertContent        :: String
+  , insertPostType       :: String
+  }
+  deriving (Show, Generic)
+
+instance ToJSON PostInsert
+instance FromJSON PostInsert

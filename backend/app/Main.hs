@@ -9,6 +9,7 @@ import Network.Wai.Handler.Warp (run)
 import API (api)
 import qualified Database.PostgreSQL.Simple as PGSimple
 import qualified Controller.UserController as UserController
+import qualified Controller.PostController as PostController
 import qualified Migrations
 import System.IO (hFlush, stdout)
 
@@ -35,7 +36,15 @@ main = do
                            :<|> UserController.getUserByIdHandler conn
                            :<|> UserController.insertUserHandler conn
                            :<|> UserController.updateUserHandler conn
-                           :<|> UserController.deleteUserHandler conn))
+                           :<|> UserController.deleteUserHandler conn
+                           :<|> PostController.getAllPostsHandler conn
+                           :<|> PostController.getPostsByUserIdHandler conn
+                           :<|> PostController.getPostsByFollowsHandler conn
+                           :<|> PostController.getPostByIdHandler conn
+                           :<|> PostController.insertPostHandler conn
+                           :<|> PostController.updatePostHandler conn
+                           :<|> PostController.deletePostHandler conn
+                          ))
 
   -- Close the connection
   PGSimple.close conn
