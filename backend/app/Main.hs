@@ -10,6 +10,7 @@ import API (api)
 import qualified Database.PostgreSQL.Simple as PGSimple
 import qualified Controller.UserController as UserController
 import qualified Controller.PostController as PostController
+import qualified Controller.FollowController as FollowController
 import qualified Migrations
 import System.IO (hFlush, stdout)
 
@@ -28,7 +29,7 @@ main = do
   Migrations.createTables conn
 
   -- Run the Servant server
-  putStrLn "Running server on port 8080..."
+  putStrLn "Running server on port 8080.."
   hFlush stdout  -- Flush the buffer to ensure immediate display
   run 8080 (serve API.api (UserController.getAllUsersHandler conn
                            :<|> UserController.getUserByUsernameHandler conn
@@ -44,6 +45,10 @@ main = do
                            :<|> PostController.insertPostHandler conn
                            :<|> PostController.updatePostHandler conn
                            :<|> PostController.deletePostHandler conn
+                           :<|> FollowController.getFollowingHandler conn
+                           :<|> FollowController.getFollowersHandler conn
+                           :<|> FollowController.insertFollowHandler conn
+                           :<|> FollowController.deleteFollowHandler conn
                           ))
 
   -- Close the connection

@@ -4,7 +4,7 @@
 module API where
 
 import Servant
-import Schema (User, UserInsert, UserUpdate, Post, PostInsert, PostUpdate)
+import Schema (User, UserInsert, UserUpdate, Post, PostInsert, PostUpdate, FollowInsert)
 import Data.UUID (UUID)
 import Control.Monad.IO.Class (liftIO)
 import qualified Service.UserService as UserService
@@ -25,6 +25,12 @@ type API =
     :<|> "post" :> ReqBody '[JSON] PostInsert :> Put '[JSON] ()
     :<|> "post" :> ReqBody '[JSON] PostUpdate :> Patch '[JSON] ()
     :<|> "post" :> Capture "id" UUID :> Delete '[JSON] ()
+    -- Follow endpoints
+    :<|> "follows" :> "following" :> Capture "user_id" UUID :> Get '[JSON] [User]
+    :<|> "follows" :> "followers" :> Capture "user_id" UUID :> Get '[JSON] [User]
+    :<|> "follow" :> ReqBody '[JSON] FollowInsert :> Put '[JSON] ()
+    :<|> "follow" :> QueryParam "user_followed" UUID :> QueryParam "user_follower" UUID :> Delete '[JSON] ()
+
 
 api :: Proxy API
 api = Proxy
