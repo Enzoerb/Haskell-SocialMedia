@@ -29,7 +29,7 @@ type API =
     :<|> "follows" :> "following" :> Capture "user_id" UUID :> Get '[JSON] [User]
     :<|> "follows" :> "followers" :> Capture "user_id" UUID :> Get '[JSON] [User]
     :<|> "follow" :> ReqBody '[JSON] FollowInsert :> Put '[JSON] ()
-    :<|> "follow" :> Capture "user_followed" UUID :> Capture "user_follower" UUID :> Delete '[JSON] ()
+    :<|> "follow" :> QueryParam "user_followed" UUID :> QueryParam "user_follower" UUID :> Delete '[JSON] ()
 
 
 api :: Proxy API

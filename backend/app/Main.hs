@@ -29,7 +29,7 @@ main = do
   Migrations.createTables conn
 
   -- Run the Servant server
-  putStrLn "Running server on port 8080..."
+  putStrLn "Running server on port 8080.."
   hFlush stdout  -- Flush the buffer to ensure immediate display
   run 8080 (serve API.api (UserController.getAllUsersHandler conn
                            :<|> UserController.getUserByUsernameHandler conn
@@ -46,7 +46,7 @@ main = do
                            :<|> PostController.updatePostHandler conn
                            :<|> PostController.deletePostHandler conn
                            :<|> FollowController.getFollowingHandler conn
-                           :<|> FollowController.getFollowerHandler conn
+                           :<|> FollowController.getFollowersHandler conn
                            :<|> FollowController.insertFollowHandler conn
                            :<|> FollowController.deleteFollowHandler conn
                           ))

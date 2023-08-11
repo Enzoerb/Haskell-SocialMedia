@@ -33,7 +33,7 @@ instance PGToField.ToField Char where
 deleteFollow :: PGSimple.Connection -> UUID -> UUID -> IO ()
 deleteFollow conn userFollowedId userFollowerId = do
   let queryString =
-        "DELETE FROM users WHERE user_followed_id = ? AND user_follower_id = ?"
+        "DELETE FROM follow WHERE user_followed_id = ? AND user_follower_id = ?"
 
   void $ PGSimple.execute conn queryString (userFollowedId, userFollowerId)
 
@@ -41,7 +41,7 @@ deleteFollow conn userFollowedId userFollowerId = do
 insertFollow :: PGSimple.Connection -> Schema.FollowInsert -> IO ()
 insertFollow conn (Schema.FollowInsert insertUserFollowedId insertUserFollowerId) = do
   let queryString =
-        "INSERT INTO users (id, user_followed_id, user_follower_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?)"
+        "INSERT INTO follow (id, user_followed_id, user_follower_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?)"
 
   createdAt <- getCurrentTime
   updatedAt <- getCurrentTime
@@ -50,7 +50,7 @@ insertFollow conn (Schema.FollowInsert insertUserFollowedId insertUserFollowerId
 
 
 getFollowing :: PGSimple.Connection -> UUID -> IO [Schema.User]
-getFollowing conn userId = PGSimple.query conn "SELECT user.id, user.username, user.first_name, user.last_name, user.email, user.password, user.created_at, user.updated_at FROM follow JOIN user ON user.id = follow.user_followed_id WHERE user_follower_id = ?" (userId)
+getFollowing conn userId = PGSimple.query conn "SELECT users.id, users.username, users.first_name, users.last_name, users.email, users.password, users.created_at, users.updated_at FROM follow JOIN users ON users.id = follow.user_followed_id WHERE follow.user_follower_id = ?" (userId)
 
 getFollowers :: PGSimple.Connection -> UUID -> IO [Schema.User]
-getFollowers conn userId = PGSimple.query conn "SELECT user.id, user.username, user.first_name, user.last_name, user.email, user.password, user.created_at, user.updated_at FROM follow JOIN user ON user.id = follow.user_follower_id WHERE user_followed_id = ?" (userId)
+getFollowers conn userId = PGSimple.query conn "SELECT users.id, users.username, users.first_name, users.last_name, users.email, users.password, users.created_at, users.updated_at FROM follow JOIN users ON users.id = follow.user_follower_id WHERE follow.user_followed_id = ?" (userId)
