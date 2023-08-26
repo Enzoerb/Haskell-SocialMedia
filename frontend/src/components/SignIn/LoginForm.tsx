@@ -1,23 +1,13 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useContext } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
+import { UserContext, User } from '@/context/user.context'
 
 type Inputs = {
   email: string
   password: string
-}
-
-type User = {
-  email: string
-  firstName: string
-  lastName: string
-  password: string
-  userCreatedAt: string
-  userUpdatedAt: string
-  userUserId: string
-  username: string
 }
 
 async function hash(str: string) {
@@ -37,6 +27,7 @@ export default function LoginForm({
   setState: Dispatch<SetStateAction<'LOGIN' | 'REGISTER'>>;
 }) {
   const router = useRouter();
+  const {setUser} = useContext(UserContext)
 
   const { register, handleSubmit } = useForm<Inputs>();
   const onSubmit: SubmitHandler<Inputs> = async ({email, password}) => {
@@ -46,7 +37,7 @@ export default function LoginForm({
       throw new Error('Failed to fetch data');
     }
 
-    const data = await res.json() as User | null;
+    const data = await res.json() as User;
 
     if (!data) {
       alert(`Usuário o endereço de e-mail: ${email}, não foi encontrado! Verifique suas informações.`)
@@ -56,7 +47,7 @@ export default function LoginForm({
     const passwordHash = await hash(password)
 
     if (data?.password === passwordHash) {
-      console.log("Login realizado com sucesso!")
+      setUser(data)
 
       return router.push('/home')
     } else {

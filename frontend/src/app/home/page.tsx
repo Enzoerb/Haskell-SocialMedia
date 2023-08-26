@@ -15,10 +15,11 @@ export default function Home() {
         <TweetForm />
         <MainPanel />
       </div>
-
+      
       <div className="w-1/4 border-l-2">
         <LeftPanel />
       </div>
+
     </main>
   );
 }
