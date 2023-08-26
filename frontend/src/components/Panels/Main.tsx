@@ -1,14 +1,40 @@
-import TweetCard from '@/components/TweetCard'
+import TweetCard from '@/components/TweetCard';
 
-export default function Main() {
+interface Tweet {
+  content: string;
+  postCreatedAt: string;
+  postId: string;
+  postType: string;
+  postUpdatedAt: string;
+  postUserId: string;
+}
+
+async function getTweets() {
+  const res = await fetch('http://localhost:8080/posts', { cache: 'no-store' });
+
+  if (!res.ok) {
+    throw new Error('Failed to fetch data');
+  }
+
+  return res.json() as Promise<Tweet[]>;
+}
+
+export default async function Main() {
+  const tweets = await getTweets();
+
+  console.log(tweets)
+
   return (
     <div className="flex flex-col">
-      <TweetCard 
-        id="02df3d1c-c76b-4060-9815-c50f13f32cbc"
-        content="My Followed Post"
-        user="matheus"
-        createdAt="2023-08-26T05:26:10.788421Z"
-      />
+      {tweets?.map((tweet) => (
+        <TweetCard
+          key={tweet?.postId}
+          id={tweet?.postId}
+          content={tweet?.content}
+          user={tweet?.postUserId}
+          createdAt={tweet?.postCreatedAt}
+        />
+      ))}
     </div>
-  )
+  );
 }

@@ -1,6 +1,8 @@
 import LeftPanel from '@/components/Panels/Left';
 import MainPanel from '@/components/Panels/Main';
 import RightPanel from '@/components/Panels/Right';
+import TweetForm from '@/components/TweetForm';
+
 
 export default function Home() {
   return (
@@ -10,9 +12,7 @@ export default function Home() {
       </div>
 
       <div className="w-1/2 h-screen overflow-y-scroll hide-scrollbar">
-        <div className="w-full h-[25vh] border-b-2">
-
-        </div>
+        <TweetForm />
         <MainPanel />
       </div>
 
