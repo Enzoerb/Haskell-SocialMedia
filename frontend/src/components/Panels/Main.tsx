@@ -29,7 +29,6 @@ export default async function Main() {
       {tweets?.map((tweet) => (
         <TweetCard
           key={tweet?.postId}
-          id={tweet?.postId}
           content={tweet?.content}
           user={tweet?.postUserId}
           createdAt={tweet?.postCreatedAt}
