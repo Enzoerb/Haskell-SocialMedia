@@ -1,4 +1,4 @@
-import LoginForm from "@/components/LoginForm";
+import SignIn from "@/components/SignIn";
 
 export default function Login() {
   return (
@@ -6,7 +6,7 @@ export default function Login() {
       <div className="w-1/2 bg-black h-screen">foo</div>
 
       <div className="w-1/2 h-screen items-center flex flex-row justify-center">
-        <LoginForm />
+        <SignIn />
       </div>
     </main>
   );
