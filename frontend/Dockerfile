@@ -1,6 +1,8 @@
 FROM node:18
 
-WORKDIR /usr/src/app
+RUN mkdir /app
+
+WORKDIR /app/frontend
 
 COPY package*.json ./
 
@@ -8,4 +10,6 @@ RUN npm install
 
 COPY . .
 
-CMD [ "npm", "run", "dev" ]
+RUN npm run build
+
+CMD ["yarn", "start" ]
