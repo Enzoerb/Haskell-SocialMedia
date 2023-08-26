@@ -75,4 +75,4 @@ getPostByFollows conn userId = PGSimple.query conn "SELECT * FROM post WHERE use
 
 
 getAllPosts :: PGSimple.Connection -> IO [Schema.Post]
-getAllPosts conn = PGSimple.query_ conn "SELECT * FROM post"
+getAllPosts conn = PGSimple.query_ conn "SELECT * FROM post ORDER BY created_at DESC"
