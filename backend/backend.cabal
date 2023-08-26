@@ -58,4 +58,5 @@ executable backend
         , cryptonite
         , memory
         , utf8-string
+        , wai-cors >=0.2 && <0.3
     default-language: Haskell2010

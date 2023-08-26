@@ -5,6 +5,7 @@ import Servant
 import Servant.API
 import Data.Text (Text)
 import Data.Aeson (ToJSON, FromJSON)
+import Network.Wai.Middleware.Cors
 import Network.Wai.Handler.Warp (run)
 import API (api)
 import qualified Database.PostgreSQL.Simple as PGSimple
@@ -28,10 +29,15 @@ main = do
   -- Create tables if they don't exist
   Migrations.createTables conn
 
+
+  let frontCors = simpleCorsResourcePolicy { corsOrigins = Just (["http://localhost:3000"],  True)
+                                           , corsMethods = ["OPTIONS", "GET", "PUT", "POST"]
+                                           , corsRequestHeaders = ["Authorization", "Content-Type"] }
+
   -- Run the Servant server
   putStrLn "Running server on port 8080.."
   hFlush stdout  -- Flush the buffer to ensure immediate display
-  run 8080 (serve API.api (UserController.getAllUsersHandler conn
+  run 8080 $ cors (const $ Just $ frontCors) $ (serve API.api (UserController.getAllUsersHandler conn
                            :<|> UserController.getUserByUsernameHandler conn
                            :<|> UserController.getUserByEmailHandler conn
                            :<|> UserController.getUserByIdHandler conn
