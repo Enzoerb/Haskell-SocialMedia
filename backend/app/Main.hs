@@ -12,6 +12,7 @@ import qualified Database.PostgreSQL.Simple as PGSimple
 import qualified Controller.UserController as UserController
 import qualified Controller.PostController as PostController
 import qualified Controller.FollowController as FollowController
+import qualified Controller.IdenticonController as IdenticonController
 import qualified Migrations
 import System.IO (hFlush, stdout)
 
@@ -37,7 +38,8 @@ main = do
   -- Run the Servant server
   putStrLn "Running server on port 8080.."
   hFlush stdout  -- Flush the buffer to ensure immediate display
-  run 8080 $ cors (const $ Just $ frontCors) $ (serve API.api (UserController.getAllUsersHandler conn
+  run 8080 $ cors (const $ Just $ frontCors) $ (serve API.api (
+                                UserController.getAllUsersHandler conn
                            :<|> UserController.getUserByUsernameHandler conn
                            :<|> UserController.getUserByEmailHandler conn
                            :<|> UserController.getUserByIdHandler conn
@@ -54,7 +56,8 @@ main = do
                            :<|> FollowController.getFollowingHandler conn
                            :<|> FollowController.getFollowersHandler conn
                            :<|> FollowController.insertFollowHandler conn
-                           :<|> FollowController.deleteFollowHandler conn
+                           :<|> (FollowController.deleteFollowHandler conn)
+                           :<|> (IdenticonController.generateIdenticonHandler)
                           ))
 
   -- Close the connection
