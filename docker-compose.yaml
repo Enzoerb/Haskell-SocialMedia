@@ -29,7 +29,7 @@ services:
       context: ./frontend
       dockerfile: ./Dockerfile
     volumes:
-      - .:/app
+      - ./frontend:/app/frontend
     ports:
       - 3000:3000
     depends_on:

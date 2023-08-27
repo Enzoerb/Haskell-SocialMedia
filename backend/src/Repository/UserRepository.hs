@@ -83,5 +83,9 @@ getUsersByUsername conn username = do
     _      -> return Nothing
 
 
+getUsersByUsernameOrEmail :: PGSimple.Connection -> String -> String -> IO [Schema.User]
+getUsersByUsernameOrEmail conn username email = PGSimple.query conn "SELECT id FROM users WHERE username = ? OR email = ?" (username, email)
+
+
 getAllUsers :: PGSimple.Connection -> IO [Schema.User]
 getAllUsers conn = PGSimple.query_ conn "SELECT * FROM users"

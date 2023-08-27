@@ -1,4 +1,4 @@
-module Service.IdenticonService where
+module Service.IdenticonService (generateIdenticon) where
 
 import Data.Char (ord)
 import Codec.Picture
@@ -37,5 +37,6 @@ patternToImage (r, g, b) pattern = generateImage pixelRenderer width height
 imageToBase64 :: Image PixelRGB8 -> String
 imageToBase64 image = BS.unpack . encode . toStrict $ encodePng image
 
-generateIdenticon :: String -> String
-generateIdenticon hash = imageToBase64 . patternToImage (colorFromHash hash) $ identiconPattern hash
+generateIdenticon :: String -> IO (String)
+generateIdenticon hash = do
+  return $ imageToBase64 . patternToImage (colorFromHash hash) $ identiconPattern hash
