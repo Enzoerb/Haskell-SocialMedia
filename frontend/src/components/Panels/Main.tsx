@@ -7,6 +7,8 @@ interface Tweet {
   postType: string;
   postUpdatedAt: string;
   postUserId: string;
+  userFirstName: string;
+  userUsername: string;
 }
 
 async function getTweets() {
@@ -30,8 +32,10 @@ export default async function Main() {
         <TweetCard
           key={tweet?.postId}
           content={tweet?.content}
-          user={tweet?.postUserId}
+          userId={tweet?.postUserId}
           createdAt={tweet?.postCreatedAt}
+          name={tweet?.userFirstName}
+          username={tweet?.userUsername}
         />
       ))}
     </div>
