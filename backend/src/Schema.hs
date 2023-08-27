@@ -133,6 +133,8 @@ data Post = Post
   , postType      :: String
   , postCreatedAt :: UTCTime
   , postUpdatedAt :: UTCTime
+  , userFirstName :: String
+  , userUsername  :: String
   }
   deriving (Show, Generic)
 
@@ -148,6 +150,8 @@ instance PGToRow.ToRow Post where
     , PGToField.toField (postType post)
     , PGToField.toField (formatUTCTime $ postCreatedAt post)
     , PGToField.toField (formatUTCTime $ postUpdatedAt post)
+    , PGToField.toField (userFirstName post)
+    , PGToField.toField (userUsername post)
     ]
 
 instance PGFromRow.FromRow Schema.Post where
@@ -158,6 +162,8 @@ instance PGFromRow.FromRow Schema.Post where
     <*> PGFromRow.field  -- postType
     <*> PGFromRow.field  -- postCreatedAt
     <*> PGFromRow.field  -- postUpdatedAt
+    <*> PGFromRow.field  -- userFirstName
+    <*> PGFromRow.field  -- userUsername
 
 data PostUpdate = PostUpdate
   { oldPostId      :: UUID

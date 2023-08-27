@@ -60,19 +60,19 @@ insertPost conn (Schema.PostInsert insertPostUserId insertContent insertPostType
 
 getPostById :: PGSimple.Connection -> UUID -> IO (Maybe Schema.Post)
 getPostById conn postId = do
-  result <- PGSimple.query conn "SELECT * FROM post WHERE id = ?" (PGTypes.Only postId)
+  result <- PGSimple.query conn "SELECT post.*, users.first_name, users.username FROM post JOIN users ON post.user_id = users.id WHERE id = ?" (PGTypes.Only postId)
   case result of
     [user] -> return $ Just user
     _      -> return Nothing
 
 
 getPostByUserId :: PGSimple.Connection -> UUID -> IO [Schema.Post]
-getPostByUserId conn userId = PGSimple.query conn "SELECT * FROM post WHERE user_id = ?" (userId)
+getPostByUserId conn userId = PGSimple.query conn "SELECT post.*, users.first_name, users.username FROM post JOIN users ON post.user_id = users.id WHERE user_id = ?" (userId)
 
 
 getPostByFollows :: PGSimple.Connection -> UUID -> IO [Schema.Post]
-getPostByFollows conn userId = PGSimple.query conn "SELECT * FROM post WHERE user_id in (SELECT user_followed_id as user_id FROM follow WHERE user_follower_id = ?)" (userId)
+getPostByFollows conn userId = PGSimple.query conn "SELECT post.*, users.first_name, users.username FROM post JOIN users ON post.user_id = users.id WHERE user_id in (SELECT user_followed_id as user_id FROM follow WHERE user_follower_id = ?)" (userId)
 
 
 getAllPosts :: PGSimple.Connection -> IO [Schema.Post]
-getAllPosts conn = PGSimple.query_ conn "SELECT * FROM post ORDER BY created_at DESC"
+getAllPosts conn = PGSimple.query_ conn "SELECT post.*, users.first_name, users.username FROM post JOIN users ON post.user_id = users.id ORDER BY post.created_at DESC"
