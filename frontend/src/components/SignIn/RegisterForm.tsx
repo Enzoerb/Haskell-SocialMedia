@@ -24,7 +24,6 @@ export default function RegisterForm({
 
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
-    headers.append('Origin', 'http://127.0.0.1');
 
     var requestOptions: RequestInit = {
       method: 'PUT',
