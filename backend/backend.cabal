@@ -49,6 +49,7 @@ executable backend
         , time
         , uuid
         , bytestring
+        , base64-bytestring
         , text
         , mtl
         , servant
@@ -58,5 +59,6 @@ executable backend
         , cryptonite
         , memory
         , utf8-string
+        , JuicyPixels
         , wai-cors >=0.2 && <0.3
     default-language: Haskell2010
