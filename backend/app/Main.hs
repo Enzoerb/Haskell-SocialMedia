@@ -31,7 +31,7 @@ main = do
 
 
   let frontCors = simpleCorsResourcePolicy { corsOrigins = Just (["http://localhost:3000"],  True)
-                                           , corsMethods = ["OPTIONS", "GET", "PUT", "POST"]
+                                           , corsMethods = ["OPTIONS", "GET", "PUT", "POST", "PATCH"]
                                            , corsRequestHeaders = ["Authorization", "Content-Type"] }
 
   -- Run the Servant server
