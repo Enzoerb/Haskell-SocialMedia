@@ -2,6 +2,7 @@ import LeftPanel from '@/components/Panels/Left';
 import { Tweet } from '@/components/Panels/Main';
 import RightPanel from '@/components/Panels/Right';
 import Actions from '@/components/Profile/Actions';
+import Photo from '@/components/Profile/Photo/Photo.server';
 import TweetCard from '@/components/TweetCard';
 import { User } from '@/context/user.context';
 
@@ -50,7 +51,9 @@ export default async function User({
       <div className="w-1/2 h-screen overflow-y-scroll hide-scrollbar">
         <div className="w-full h-[35vh] border-b-2 p-4">
           <div className="flex flex-row">
-            <div className="w-[30vh] h-[30vh] bg-black rounded-lg" />
+            <div className="w-[30vh] h-[30vh]">
+              <Photo id={params?.id} />
+            </div>
 
             <div className="pl-8 flex flex-col">
               <h3 className="font-bold text-2xl mt-4">

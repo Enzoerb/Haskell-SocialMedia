@@ -1,14 +1,17 @@
 'use client';
-import { useContext, useState } from 'react';
-import { UserContext } from '@/context/user.context';
-import TweetForm from '@/components/TweetForm';
-import Link from 'next/link';
 import Modal from '@/components/Modal';
+import Photo from '@/components/Profile/Photo/Photo.client';
+import TweetForm from '@/components/TweetForm';
+import { UserContext } from '@/context/user.context';
+import Link from 'next/link';
+import { useContext, useState } from 'react';
 
 export default function Right() {
   const [showModal, setShowModal] = useState(false);
 
   const { user } = useContext(UserContext);
+
+  if (!user) return <p>Faça login novamente para visualizar</p>;
 
   return (
     <>
@@ -23,9 +26,10 @@ export default function Right() {
           λ-Social
         </Link>
 
+        <Photo id={user?.userUserId} />
         <Link
           href={`/user/${user?.userUserId}`}
-          className="border-2 p-2 rounded-lg hover:cursor-pointer hover:bg-gray-100 transition-all duration-300"
+          className="border-2 p-2 mt-4 rounded-lg hover:cursor-pointer hover:bg-gray-100 transition-all duration-300"
         >
           <p className="font-bold">
             {user?.firstName} {user?.lastName}

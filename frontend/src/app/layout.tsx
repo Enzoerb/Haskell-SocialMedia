@@ -6,7 +6,7 @@ import './globals.css';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'λ Social',
+  title: 'λ-Social',
   description: 'Uma rede social desenvolvida em Haskell + React',
 };
 

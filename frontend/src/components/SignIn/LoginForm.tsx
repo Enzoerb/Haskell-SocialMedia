@@ -1,14 +1,14 @@
 'use client';
 
+import { User, UserContext } from '@/context/user.context';
 import { useRouter } from 'next/navigation';
 import { Dispatch, SetStateAction, useContext } from 'react';
-import { useForm, SubmitHandler } from 'react-hook-form';
-import { UserContext, User } from '@/context/user.context'
+import { SubmitHandler, useForm } from 'react-hook-form';
 
 type Inputs = {
-  email: string
-  password: string
-}
+  email: string;
+  password: string;
+};
 
 async function hash(str: string) {
   const utf8 = new TextEncoder().encode(str);
@@ -20,41 +20,44 @@ async function hash(str: string) {
   return hashHex;
 }
 
-
 export default function LoginForm({
   setState,
 }: {
   setState: Dispatch<SetStateAction<'LOGIN' | 'REGISTER'>>;
 }) {
   const router = useRouter();
-  const {setUser} = useContext(UserContext)
+  const { setUser } = useContext(UserContext);
 
   const { register, handleSubmit } = useForm<Inputs>();
-  const onSubmit: SubmitHandler<Inputs> = async ({email, password}) => {
-    const res = await fetch(`http://localhost:8080/user/email/${email}`, { cache: 'no-store'})
+  const onSubmit: SubmitHandler<Inputs> = async ({ email, password }) => {
+    const res = await fetch(`http://localhost:8080/user/email/${email}`, {
+      cache: 'no-store',
+    });
 
     if (!res.ok) {
       throw new Error('Failed to fetch data');
     }
 
-    const data = await res.json() as User;
+    const data = (await res.json()) as User;
 
     if (!data) {
-      alert(`Usuário o endereço de e-mail: ${email}, não foi encontrado! Verifique suas informações.`)
-      return
+      alert(
+        `Usuário o endereço de e-mail: ${email}, não foi encontrado! Verifique suas informações.`
+      );
+      return;
     }
 
-    const passwordHash = await hash(password)
+    const passwordHash = await hash(password);
 
     if (data?.password === passwordHash) {
-      setUser(data)
+      setUser(data);
 
-      return router.push('/home')
+      return router.push('/home');
     } else {
-      alert('Senha incorreta! Tente novamente.')
-      return
+      alert('Senha incorreta! Tente novamente.');
+      return;
     }
-  }
+  };
 
   return (
     <form className="space-y-4 w-1/2" onSubmit={handleSubmit(onSubmit)}>
@@ -67,7 +70,7 @@ export default function LoginForm({
           id="email"
           className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg block w-full p-2.5"
           placeholder="email@email.com"
-          {...register('email', {required: true})}
+          {...register('email', { required: true })}
         />
       </div>
       <div>
@@ -79,7 +82,7 @@ export default function LoginForm({
           id="password"
           placeholder="••••••••"
           className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg block w-full p-2.5"
-          {...register('password', {required: true})}
+          {...register('password', { required: true })}
         />
       </div>
       <button
