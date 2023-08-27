@@ -67,11 +67,11 @@ getPostById conn postId = do
 
 
 getPostByUserId :: PGSimple.Connection -> UUID -> IO [Schema.Post]
-getPostByUserId conn userId = PGSimple.query conn "SELECT post.*, users.first_name, users.username FROM post JOIN users ON post.user_id = users.id WHERE user_id = ?" (userId)
+getPostByUserId conn = PGSimple.query conn "SELECT post.*, users.first_name, users.username FROM post JOIN users ON post.user_id = users.id WHERE user_id = ?"
 
 
 getPostByFollows :: PGSimple.Connection -> UUID -> IO [Schema.Post]
-getPostByFollows conn userId = PGSimple.query conn "SELECT post.*, users.first_name, users.username FROM post JOIN users ON post.user_id = users.id WHERE user_id in (SELECT user_followed_id as user_id FROM follow WHERE user_follower_id = ?)" (userId)
+getPostByFollows conn = PGSimple.query conn "SELECT post.*, users.first_name, users.username FROM post JOIN users ON post.user_id = users.id WHERE user_id in (SELECT user_followed_id as user_id FROM follow WHERE user_follower_id = ?)"
 
 
 getAllPosts :: PGSimple.Connection -> IO [Schema.Post]
