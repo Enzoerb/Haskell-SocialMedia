@@ -1,9 +1,7 @@
 'use client';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useForm, SubmitHandler } from 'react-hook-form';
+import { Dispatch, SetStateAction, useState } from 'react';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import LoadingSpinner from '../LoadingSpinner';
-import { Dispatch, SetStateAction } from 'react';
 
 export type RegisterInputs = {
   insertEmail: string;
@@ -19,8 +17,6 @@ export default function RegisterForm({
   setState: Dispatch<SetStateAction<'LOGIN' | 'REGISTER'>>;
 }) {
   const [isLoading, setIsLoading] = useState(false);
-
-  const router = useRouter();
 
   const { register, handleSubmit } = useForm<RegisterInputs>();
   const onSubmit: SubmitHandler<RegisterInputs> = (data) => {
@@ -43,10 +39,10 @@ export default function RegisterForm({
       .then(() => setIsLoading(false))
       .then(() =>
         alert(
-          'Usuário cadastrado com sucesso! Você será redirecionado para a tela inicial.'
+          'Usuário cadastrado com sucesso! Você será redirecionado para a tela de login.'
         )
       )
-      .then(() => router.push('/home'))
+      .then(() => setState('LOGIN'))
       .catch((error) => {
         console.log('error', error);
         alert('Erro ao cadastrar usuário. Tente novamente.');

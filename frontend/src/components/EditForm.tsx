@@ -32,6 +32,40 @@ export default function EditForm() {
     }
   }, [setValue, user]);
 
+  const deleteAccount = () => {
+    if (confirm('Tem certeza que deseja excluir sua conta?')) {
+      setIsLoading(true);
+
+      const headers = new Headers();
+      headers.append('Content-Type', 'application/json');
+
+      var requestOptions: RequestInit = {
+        method: 'DELETE',
+        headers: headers,
+      };
+
+      fetch(`http://localhost:8080/user/${user?.userUserId}`, requestOptions)
+        .then((response) => response.json())
+        .then((result) => console.log(result))
+        .then(() => alert('Conta excluída com sucesso.'))
+        .then(() => {
+          setUser(null);
+        })
+        .then(() => {
+          startTransition(() => {
+            router.push('/');
+          });
+        })
+        .catch((error) => {
+          console.log('error', error);
+          alert('Erro ao excluir conta. Tente novamente.');
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    }
+  };
+
   const onSubmit: SubmitHandler<RegisterInputs> = (data) => {
     setIsLoading(true);
 
@@ -146,11 +180,19 @@ export default function EditForm() {
           {...register('newPassword', { required: true })}
         />
       </div>
+
       <button
         type="submit"
         className="w-full text-white bg-primary-600 hover:bg-primary-700 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
       >
         Salvar alterações
+      </button>
+
+      <button
+        onClick={() => deleteAccount()}
+        className="w-full text-white bg-red-600 hover:bg-red-700 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+      >
+        Excluir conta
       </button>
     </form>
   );
