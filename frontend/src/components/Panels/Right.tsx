@@ -2,6 +2,7 @@
 import { useContext, useState } from 'react';
 import { UserContext } from '@/context/user.context';
 import TweetForm from '@/components/TweetForm';
+import Link from 'next/link';
 
 export default function Right() {
   const [showModal, setShowModal] = useState(false);
@@ -34,7 +35,9 @@ export default function Right() {
       ) : null}
 
       <div className="flex h-screen p-4 flex-col">
-        <p className="font-bold text-3xl mb-8">λ-Social</p>
+        <Link href="/home" className="font-bold text-3xl mb-8">
+          λ-Social
+        </Link>
 
         <div className="border-2 p-2 rounded-lg hover:cursor-pointer hover:bg-gray-100 transition-all duration-300">
           <p className="font-bold">

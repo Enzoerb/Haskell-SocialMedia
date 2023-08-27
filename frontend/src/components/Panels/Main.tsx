@@ -1,6 +1,6 @@
 import TweetCard from '@/components/TweetCard';
 
-interface Tweet {
+export interface Tweet {
   content: string;
   postCreatedAt: string;
   postId: string;
@@ -23,8 +23,6 @@ async function getTweets() {
 
 export default async function Main() {
   const tweets = await getTweets();
-
-  console.log(tweets)
 
   return (
     <div className="flex flex-col">
