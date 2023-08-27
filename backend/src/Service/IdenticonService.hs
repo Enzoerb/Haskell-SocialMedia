@@ -30,13 +30,16 @@ mirrorMatrix = map (\row -> row ++ reverse (take 2 row))
 patternToImage :: ColorRGB -> [[Bool]] -> Image PixelRGB8
 patternToImage (r, g, b) pattern = generateImage pixelRenderer width height
   where
-    width = length (head pattern)
-    height = length pattern
-    pixelRenderer x y = if pattern !! y !! x then PixelRGB8 (fromIntegral r) (fromIntegral g) (fromIntegral b) else PixelRGB8 255 255 255
+    width = 30 * length (head pattern)
+    height = 30 * length pattern
+    pixelRenderer x y = 
+      if pattern !! (y `div` 30) !! (x `div` 30)
+        then PixelRGB8 (fromIntegral r) (fromIntegral g) (fromIntegral b)
+        else PixelRGB8 255 255 255
 
 imageToBase64 :: Image PixelRGB8 -> String
 imageToBase64 image = BS.unpack . encode . toStrict $ encodePng image
 
 generateIdenticon :: String -> IO (String)
 generateIdenticon hash = do
-  return $ imageToBase64 . patternToImage (colorFromHash hash) $ identiconPattern hash
+  return $  "data:image/png;base64, " <> (imageToBase64 . patternToImage (colorFromHash hash) $ identiconPattern hash)
