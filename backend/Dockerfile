@@ -1,5 +1,8 @@
 FROM haskell:9.2.7
 
+EXPOSE 8080
+EXPOSE 9160
+
 RUN mkdir /app
 WORKDIR /app/backend
 
