@@ -64,4 +64,6 @@ executable backend
         , wai-cors >=0.2 && <0.3
         , websockets
         , wai-websockets
+        , wai
+        , http-types
     default-language: Haskell2010
