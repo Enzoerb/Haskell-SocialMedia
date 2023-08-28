@@ -89,8 +89,10 @@ Test-Suite api
     main-is:         Spec.hs
     hs-source-dirs:  test, src
     other-modules:   Service.IdenticonService
+                     Service.IdenticonServiceSpec
     build-depends:
         hspec
         , hspec-contrib
         , QuickCheck
         , HUnit
+    build-tool-depends: hspec-discover:hspec-discover
