@@ -60,6 +60,7 @@ main = do
                            :<|> (FollowController.deleteFollowHandler conn)
                            :<|> (IdenticonController.generateIdenticonHandler)
                            :<|> (PassRecoveryController.requestPassRecoveryHandler)
+                           :<|> (PassRecoveryController.resetPasswordHandler conn)
                           ))
 
   -- Close the connection

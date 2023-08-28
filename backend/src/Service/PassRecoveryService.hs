@@ -1,9 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Service.PassRecoveryService (requestPassRecovery) where
+module Service.PassRecoveryService (requestPassRecovery, resetPassword) where
 
 import Data.UUID (UUID, toString)
 import Database.PostgreSQL.Simple (Connection)
+import Schema
 import qualified Repository.UserRepository as UserRepo
 import Schema
 import Data.List.NonEmpty (fromList)
@@ -37,3 +38,6 @@ requestPassRecovery email userId  = do
   case eResponse of
     Left httpException -> error $ show httpException
     Right response -> return "Sucesso ao enviar o email de recuperação de senha!"
+
+resetPassword :: Connection -> Schema.UserPassRecovery -> IO ()
+resetPassword conn updatePassword = UserRepo.updatePasword conn updatePassword

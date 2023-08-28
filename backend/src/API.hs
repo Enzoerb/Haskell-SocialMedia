@@ -4,7 +4,7 @@
 module API where
 
 import Servant
-import Schema (User, UserInsert, UserUpdate, Post, PostInsert, PostUpdate, FollowInsert)
+import Schema (User, UserInsert, UserUpdate, Post, PostInsert, PostUpdate, FollowInsert, UserPassRecovery)
 import Data.UUID (UUID)
 import Control.Monad.IO.Class (liftIO)
 import qualified Service.UserService as UserService
@@ -34,6 +34,7 @@ type API =
     :<|> "identicon" :> Capture "hash" String :> Get '[JSON] (String)
     -- Password Recovery
     :<|> "recovery" :> Capture "email" String :> Capture "userId" UUID :> Get '[JSON] (String)
+    :<|> "recovery" :> ReqBody '[JSON] UserPassRecovery :> Patch '[JSON] ()
 
 
 api :: Proxy API
