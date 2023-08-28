@@ -100,7 +100,7 @@ export default function EditForm() {
       })
       .catch((error) => {
         console.log('error', error);
-        alert('Erro ao cadastrar usuário. Tente novamente.');
+        alert('Erro ao editar usuário. Tente novamente.');
       })
       .finally(() => {
         setIsLoading(false);
