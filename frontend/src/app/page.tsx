@@ -18,7 +18,7 @@ export default function Login() {
         </svg>
       </div>
 
-      <div className="w-1/2 h-screen items-center flex flex-row justify-center">
+      <div className="w-1/2 h-screen items-center flex flex-col justify-center">
         <SignIn />
       </div>
     </main>
