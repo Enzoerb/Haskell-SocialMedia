@@ -37,7 +37,7 @@ export default function TweetForm() {
       redirect: 'follow',
     };
 
-    fetch('http://backend:8080/post', requestOptions)
+    fetch('http://localhost:8080/post', requestOptions)
       .then((response) => response.text())
       .then((result) => console.log(result))
       .then(() => {
@@ -50,7 +50,7 @@ export default function TweetForm() {
       })
       .catch((error1) => {
         console.log('error', error1);
-        fetch('http://localhost:8080/post', requestOptions)
+        fetch('http://backend:8080/post', requestOptions)
           .then((response) => response.text())
           .then((result) => console.log(result))
           .then(() => {

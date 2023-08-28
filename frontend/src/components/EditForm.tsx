@@ -44,7 +44,7 @@ export default function EditForm() {
         headers: headers,
       };
 
-      fetch(`http://backend:8080/user/${user?.userUserId}`, requestOptions)
+      fetch(`http://localhost:8080/user/${user?.userUserId}`, requestOptions)
         .then((response) => response.json())
         .then((result) => console.log(result))
         .then(() => alert('Conta excluída com sucesso.'))
@@ -78,7 +78,7 @@ export default function EditForm() {
       body: JSON.stringify(data),
     };
 
-    fetch('http://backend:8080/user', requestOptions)
+    fetch('http://localhost:8080/user', requestOptions)
       .then((response) => response.text())
       .then((result) => console.log(result))
       .then(() => alert('Informações alteradas com sucesso.'))

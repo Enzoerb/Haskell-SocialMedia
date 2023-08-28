@@ -7,7 +7,7 @@ import TweetCard from '@/components/TweetCard';
 import { User } from '@/context/user.context';
 
 async function getUserInfo(id: string) {
-  const res = await fetch(`http://backend:8080/user/id/${id}`, {
+  const res = await fetch(`http://localhost:8080/user/id/${id}`, {
     cache: 'no-store',
   });
 
@@ -19,7 +19,7 @@ async function getUserInfo(id: string) {
 }
 
 async function getUserTweets(id: string) {
-  const res = await fetch(`http://backend:8080/posts/user/${id}`, {
+  const res = await fetch(`http://localhost:8080/posts/user/${id}`, {
     cache: 'no-store',
   });
 

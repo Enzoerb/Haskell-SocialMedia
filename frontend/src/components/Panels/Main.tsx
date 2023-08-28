@@ -12,7 +12,7 @@ export interface Tweet {
 }
 
 async function getTweets() {
-  const res = await fetch('http://backend:8080/posts', { cache: 'no-store' });
+  const res = await fetch('http://localhost:8080/posts', { cache: 'no-store' });
 
   if (!res.ok) {
     throw new Error('Failed to fetch data');

@@ -74,5 +74,4 @@ broadcast clients srcClientId msg =
         dt <- getCurrentTime
         let chatMsg = ChatMessage srcClientId msg dt
             jsonMsg = BL.toStrict $ encode chatMsg
-        forM_ cs $ \(clientId, conn) ->
-            when (clientId /= srcClientId) $ sendTextData conn jsonMsg
+        forM_ cs $ \(clientId, conn) -> sendTextData conn jsonMsg
