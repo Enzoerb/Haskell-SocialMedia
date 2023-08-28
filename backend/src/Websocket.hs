@@ -1,97 +1,78 @@
 {-# LANGUAGE OverloadedStrings #-}
+
 module Websocket where
 
-import Data.Char (isPunctuation, isSpace)
-import Data.Monoid (mappend)
-import Data.Text (Text)
-import Control.Exception (finally)
-import Control.Monad (forM_, forever)
-import Control.Concurrent (MVar, newMVar, modifyMVar_, modifyMVar, readMVar)
-import qualified Data.Text as T
-import qualified Data.Text.IO as T
-import Control.Exception (AsyncException, fromException, handle, throwIO)
-import Control.Concurrent (forkIO, threadDelay)
-
-import qualified Network.WebSockets as WS
-
-type Client = (Text, WS.Connection)
-
-type ServerState = [Client]
-
-newServerState :: ServerState
-newServerState = []
-
-numClients :: ServerState -> Int
-numClients = length
-
-clientExists :: Client -> ServerState -> Bool
-clientExists client = any ((== fst client) . fst)
-
-addClient :: Client -> ServerState -> ServerState
-addClient client clients = client : clients
-
-removeClient :: Client -> ServerState -> ServerState
-removeClient client = filter ((/= fst client) . fst)
-
-broadcast :: Text -> ServerState -> IO ()
-broadcast message clients = do
-    T.putStrLn message
-    forM_ clients $ \(_, conn) -> WS.sendTextData conn message
+import Network.Wai
+import Network.Wai.Handler.Warp (run)
+import Network.Wai.Handler.WebSockets
+import Network.WebSockets
+import qualified Data.Text as Text
+import Control.Concurrent.MVar
+import Control.Concurrent (threadDelay, forkIO)
+import Control.Monad (forever, forM_, when)
+import Network.HTTP.Types.Status (status400)
+import Data.Aeson (ToJSON, toJSON, object, (.=), encode)
+import Data.Time.Clock (getCurrentTime, UTCTime)
+import qualified Data.ByteString.Lazy as BL
+import qualified Data.ByteString.Char8 as B
 
 
-talk :: WS.Connection -> MVar ServerState -> Client -> IO ()
-talk conn state (user, _) = forever $ do
-    msg <- WS.receiveData conn
-    readMVar state >>= broadcast
-        (user `mappend` ": " `mappend` msg)
+type ClientId = String
+type Conn = (ClientId, Connection)
+type ClientList = MVar [Conn]
 
-pingThread :: WS.Connection -> Int -> IO () -> IO ()
-pingThread conn n action
-    | n <= 0    = return ()
-    | otherwise = ignore `handle` go 1
-  where
-    go :: Int -> IO ()
-    go i = do
-        threadDelay (n * 1000 * 1000)
-        WS.sendPing conn (T.pack $ show i)
-        action
-        go (i + 1)
+data ChatMessage = ChatMessage
+    { clientId  :: ClientId
+    , message   :: String
+    , datetime  :: UTCTime
+    } deriving (Show)
 
-    ignore e = case fromException e of
-        Just async -> throwIO (async :: AsyncException)
-        Nothing    -> return ()
+instance ToJSON ChatMessage where
+    toJSON (ChatMessage cId msg dt) =
+        object ["clientId" .= cId, "message" .= msg, "datetime" .= dt]
 
-application :: MVar ServerState -> WS.ServerApp
-application state pending = do
-    conn <- WS.acceptRequest pending
-    _ <- forkIO $ pingThread conn 30 (return ())
-    msg <- WS.receiveData conn
-    clients <- readMVar state
-    case msg of
-        _   | not (prefix `T.isPrefixOf` msg) ->
-                WS.sendTextData conn ("Wrong announcement" :: Text)
-            | any ($ fst client)
-                [T.null, T.any isPunctuation, T.any isSpace] ->
-                    WS.sendTextData conn ("Name cannot " `mappend`
-                        "contain punctuation or whitespace, and " `mappend`
-                        "cannot be empty" :: Text)
-            | clientExists client clients ->
-                WS.sendTextData conn ("User already exists" :: Text)
-            | otherwise -> flip finally disconnect $ do
-               modifyMVar_ state $ \s -> do
-                   let s' = addClient client s
-                   WS.sendTextData conn $
-                       "Welcome! Users: " `mappend`
-                       T.intercalate ", " (map fst s)
-                   broadcast (fst client `mappend` " joined") s'
-                   return s'
-               talk conn state client
-          where
-            prefix     = "Hi! I am "
-            client     = (T.drop (T.length prefix) msg, conn)
-            disconnect = do
-                -- Remove client and return new state
-                s <- modifyMVar state $ \s ->
-                    let s' = removeClient client s in return (s', s')
-                broadcast (fst client `mappend` " disconnected") s
+runServer :: IO ()
+runServer = do
+    clients <- newMVar []
+    run 9160 (app clients)
 
+pingThread :: Connection -> Int -> IO ()
+pingThread conn seconds = forever $ do
+    threadDelay (seconds * 1000000)  -- microseconds
+    sendPing conn ("keepalive" :: Text.Text)
+
+app :: ClientList -> Application
+app clients = websocketsOr defaultConnectionOptions (wsApp clients) backupApp
+
+wsApp :: ClientList -> ServerApp
+wsApp clients pendingConn = do
+    let pathText = (requestPath $ pendingRequest pendingConn)
+        clientId = B.unpack $ B.tail pathText
+
+    conn <- acceptRequest pendingConn
+    -- ping thread, a cada 20s
+    _ <- forkIO $ pingThread conn 20
+
+    modifyMVar_ clients (\cs -> return ((clientId, conn):cs))
+    putStrLn $ "Cliente " ++ show clientId ++ " conectado"
+    
+    forever $ do
+        msg <- receiveData conn
+        broadcast clients clientId (Text.unpack msg)
+
+    --  "Limpar ao desconectar cliente"
+    modifyMVar_ clients (\cs -> return (filter ((/= clientId) . fst) cs))
+    putStrLn $ "Cliente " ++ show clientId ++ " disconectado"
+
+
+backupApp :: Application
+backupApp _ respond = respond $ responseLBS status400 [] "Não é uma conexão websocket"
+
+broadcast :: ClientList -> ClientId -> String -> IO ()
+broadcast clients srcClientId msg = 
+    withMVar clients $ \cs -> do
+        dt <- getCurrentTime
+        let chatMsg = ChatMessage srcClientId msg dt
+            jsonMsg = BL.toStrict $ encode chatMsg
+        forM_ cs $ \(clientId, conn) ->
+            when (clientId /= srcClientId) $ sendTextData conn jsonMsg
