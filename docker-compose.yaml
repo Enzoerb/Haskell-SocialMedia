@@ -19,24 +19,24 @@ services:
       - .:/app
     ports:
       - 8080:8080
+      - 9160:9160
     depends_on:
       - postgres
     networks:
       - app_network
 
-  # frontend:
-  #   build:
-  #     context: ./frontend
-  #     dockerfile: ./Dockerfile
-  #   volumes:
-  #     - ./frontend:/app/frontend
-  #   # command: bash -c "npm run build && npm run start"
-  #   ports:
-  #     - 3000:3000
-  #   depends_on:
-  #     - backend
-  #   networks:
-  #     - app_network
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ./Dockerfile
+    volumes:
+      - ./frontend:/app/frontend
+    ports:
+      - 3000:3000
+    depends_on:
+      - backend
+    networks:
+      - app_network
 
 networks:
   app_network:

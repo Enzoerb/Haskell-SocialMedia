@@ -25,6 +25,7 @@ executable backend
     main-is:             Main.hs
     hs-source-dirs:      app, src
     other-modules:       Migrations
+                         Websocket
                          Schema
                          API
                          Utils.PasswordEncryption
@@ -65,6 +66,8 @@ executable backend
         , utf8-string
         , JuicyPixels
         , wai-cors >=0.2 && <0.3
+        , websockets
+        , wai-websockets
         , wreq
         , lens
         , sendgrid-v3

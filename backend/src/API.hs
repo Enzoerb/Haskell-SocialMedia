@@ -32,10 +32,11 @@ type API =
     :<|> "follow" :> QueryParam "user_followed" UUID :> QueryParam "user_follower" UUID :> Delete '[JSON] ()
     -- Identicoin
     :<|> "identicon" :> Capture "hash" String :> Get '[JSON] (String)
+    -- Healthcheck
+    :<|> "healthcheck" :> Get '[JSON] (String)
     -- Password Recovery
     :<|> "recovery" :> Capture "email" String :> Capture "userId" UUID :> Get '[JSON] (String)
     :<|> "recovery" :> ReqBody '[JSON] UserPassRecovery :> Patch '[JSON] ()
-
 
 api :: Proxy API
 api = Proxy

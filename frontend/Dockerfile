@@ -1,13 +1,12 @@
 FROM node:18
 
-RUN mkdir /app
-
 WORKDIR /app/frontend
-
-COPY package*.json /app/frontend
-
-RUN npm install
 
 COPY . /app/frontend
 
-# EXPOSE 3000
+ENV NEXT_PUBLIC_API_URL=http://backend:8080
+
+# Install dependencies and start the application with the until loop
+CMD sh -c "npm install && until curl -sSf http://backend:8080/healthcheck; do sleep 1; done && npm run build && npm run start"
+
+EXPOSE 3000
