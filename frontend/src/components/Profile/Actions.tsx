@@ -1,8 +1,10 @@
 'use client';
-import EditForm from '@/components/EditForm';
+import Followers from '@/components/Follow/Followers';
+import Following from '@/components/Follow/Following';
 import Modal from '@/components/Modal';
 import { User, UserContext } from '@/context/user.context';
 import { useContext, useEffect, useState } from 'react';
+import EditForm from '../EditForm';
 
 async function getFollowing(userId: string, profileUserId: string) {
   const res = await fetch(`http://localhost:8080/follows/following/${userId}`, {
@@ -14,7 +16,7 @@ async function getFollowing(userId: string, profileUserId: string) {
   }
 
   const data = (await res.json()) as User[];
-  // check if profile user is in following list
+
   if (!data.length) return false;
 
   const following = data.find((user) => user?.userUserId === profileUserId);
@@ -24,6 +26,8 @@ async function getFollowing(userId: string, profileUserId: string) {
 
 export default function Actions({ userId }: { userId: string }) {
   const [showModal, setShowModal] = useState(false);
+  const [showFollowing, setShowFollowing] = useState(false);
+  const [showFollowers, setShowFollowers] = useState(false);
   const [following, setFollowing] = useState(false);
 
   const { user } = useContext(UserContext);
@@ -83,6 +87,10 @@ export default function Actions({ userId }: { userId: string }) {
     }
   };
 
+  if (!user?.userUserId) {
+    return null;
+  }
+
   return (
     <>
       {showModal ? (
@@ -91,14 +99,40 @@ export default function Actions({ userId }: { userId: string }) {
         </Modal>
       ) : null}
 
+      {showFollowing ? (
+        <Modal setShowModal={setShowFollowing}>
+          <Following id={user?.userUserId} />
+        </Modal>
+      ) : null}
+
+      {showFollowers ? (
+        <Modal setShowModal={setShowFollowers}>
+          <Followers id={user?.userUserId} />
+        </Modal>
+      ) : null}
+
       <div className="mt-8">
         {user?.userUserId === userId ? (
-          <button
-            className="ml-auto mb-3 mr-3 text-white bg-primary-600 hover:bg-primary-700 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-            onClick={() => setShowModal(true)}
-          >
-            Editar perfil
-          </button>
+          <>
+            <button
+              className="ml-auto mb-3 mr-3 text-white bg-primary-600 hover:bg-primary-700 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+              onClick={() => setShowModal(true)}
+            >
+              Editar perfil
+            </button>
+            <button
+              className="ml-auto mb-3 mr-3 text-white bg-primary-600 hover:bg-primary-700 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+              onClick={() => setShowFollowing(true)}
+            >
+              Seguindo
+            </button>
+            <button
+              className="ml-auto mb-3 mr-3 text-white bg-primary-600 hover:bg-primary-700 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+              onClick={() => setShowFollowers(true)}
+            >
+              Seguidores
+            </button>
+          </>
         ) : (
           <>
             {following ? (
