@@ -90,6 +90,8 @@ Test-Suite api
     hs-source-dirs:  test, src
     other-modules:   Service.IdenticonService
                      Service.IdenticonServiceSpec
+                     Utils.PasswordEncryption
+                     Utils.PasswordEncryptionSpec
     build-depends:
         hspec
         , hspec-contrib
