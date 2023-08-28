@@ -13,6 +13,7 @@ import qualified Controller.UserController as UserController
 import qualified Controller.PostController as PostController
 import qualified Controller.FollowController as FollowController
 import qualified Controller.IdenticonController as IdenticonController
+import qualified Controller.PassRecoveryController as PassRecoveryController
 import qualified Migrations
 import System.IO (hFlush, stdout)
 
@@ -58,6 +59,7 @@ main = do
                            :<|> FollowController.insertFollowHandler conn
                            :<|> (FollowController.deleteFollowHandler conn)
                            :<|> (IdenticonController.generateIdenticonHandler)
+                           :<|> (PassRecoveryController.requestPassRecoveryHandler)
                           ))
 
   -- Close the connection
