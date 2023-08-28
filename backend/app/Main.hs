@@ -75,4 +75,5 @@ app state conn = websocketsOr defaultConnectionOptions (Websocket.application st
   :<|> (FollowController.insertFollowHandler conn)
   :<|> (FollowController.deleteFollowHandler conn)
   :<|> (IdenticonController.generateIdenticonHandler)
+  :<|> (IdenticonController.generateIdenticonHandler "b20397a3-5f0b-4b4b-8d35-5a7b35a58b2a")
   )

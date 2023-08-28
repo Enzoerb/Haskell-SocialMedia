@@ -32,7 +32,7 @@ export default function RegisterForm({
       redirect: 'follow',
     };
 
-    fetch('http://localhost:8080/user', requestOptions)
+    fetch('http://backend:8080/user', requestOptions)
       .then((response) => response.text())
       .then((result) => console.log(result))
       .then(() => setIsLoading(false))
@@ -42,9 +42,22 @@ export default function RegisterForm({
         )
       )
       .then(() => setState('LOGIN'))
-      .catch((error) => {
-        console.log('error', error);
-        alert('Erro ao cadastrar usuário. Tente novamente.');
+      .catch((error1) => {
+        console.log('error', error1);
+        fetch('http://localhost:8080/user', requestOptions)
+          .then((response) => response.text())
+          .then((result) => console.log(result))
+          .then(() => setIsLoading(false))
+          .then(() =>
+            alert(
+              'Usuário cadastrado com sucesso! Você será redirecionado para a tela de login.'
+            )
+          )
+          .then(() => setState('LOGIN'))
+          .catch((error2) => {
+            console.log('error', error2);
+            alert('Erro ao cadastrar usuário. Tente novamente.');
+          });
       });
   };
 

@@ -32,6 +32,7 @@ type API =
     :<|> "follow" :> QueryParam "user_followed" UUID :> QueryParam "user_follower" UUID :> Delete '[JSON] ()
     -- Identicoin
     :<|> "identicon" :> Capture "hash" String :> Get '[JSON] (String)
+    :<|> "healthcheck" :> Get '[JSON] (String)
 
 
 api :: Proxy API
