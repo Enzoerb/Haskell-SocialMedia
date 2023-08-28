@@ -14,6 +14,7 @@ import qualified Controller.UserController as UserController
 import qualified Controller.PostController as PostController
 import qualified Controller.FollowController as FollowController
 import qualified Controller.IdenticonController as IdenticonController
+import qualified Controller.PassRecoveryController as PassRecoveryController
 import qualified Migrations
 import System.IO (hFlush, stdout)
 import qualified Network.WebSockets as WS
@@ -41,7 +42,6 @@ main = do
   let frontCors = simpleCorsResourcePolicy { corsOrigins = Just (["http://localhost:3000"],  True)
                                            , corsMethods = ["DELETE", "GET", "PUT", "POST", "PATCH"]
                                            , corsRequestHeaders = ["Authorization", "Content-Type"] }
-
 
   putStrLn "Running websocket server on port 9160.."
   state <- newMVar Websocket.newServerState
@@ -76,4 +76,6 @@ app state conn = websocketsOr defaultConnectionOptions (Websocket.application st
   :<|> (FollowController.deleteFollowHandler conn)
   :<|> (IdenticonController.generateIdenticonHandler)
   :<|> (IdenticonController.generateIdenticonHandler "b20397a3-5f0b-4b4b-8d35-5a7b35a58b2a")
+  :<|> (PassRecoveryController.requestPassRecoveryHandler)
+  :<|> (PassRecoveryController.resetPasswordHandler conn)
   )

@@ -38,6 +38,14 @@ updateUser conn (Schema.UserUpdate oldUserId newUsername newFirstName newLastNam
     let encryptedPassowrd = encryptPassword newPassword
     void $ PGSimple.execute conn queryString (newUsername, newFirstName, newLastName, newEmail, encryptedPassowrd, updatedAt, oldUserId)
 
+updatePasword :: PGSimple.Connection -> Schema.UserPassRecovery -> IO ()
+updatePasword conn (Schema.UserPassRecovery userId newPassword) = do
+    let queryString =
+            "UPDATE users SET password = ?, updated_at = ? WHERE id = ?"
+    updatedAt <- getCurrentTime
+    let encryptedPassowrd = encryptPassword newPassword
+    void $ PGSimple.execute conn queryString (encryptedPassowrd, updatedAt, userId)
+
 
 deleteUser :: PGSimple.Connection -> UUID -> IO ()
 deleteUser conn userId = do

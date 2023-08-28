@@ -58,7 +58,7 @@ instance PGFromRow.FromRow Schema.User where
     <*> PGFromRow.field  -- userUpdatedAt
 
 data UserUpdate = UserUpdate
-  { oldUserId        :: UUID
+  { oldUserId     :: UUID
   , newUsername   :: String
   , newFirstName  :: String
   , newLastName   :: String
@@ -70,6 +70,14 @@ data UserUpdate = UserUpdate
 instance ToJSON UserUpdate
 instance FromJSON UserUpdate
 
+data UserPassRecovery = UserPassRecovery
+  { recoveryUserId      :: UUID
+  , recoveryNewPassword :: String
+  }
+  deriving (Show, Generic)
+
+instance ToJSON UserPassRecovery
+instance FromJSON UserPassRecovery
 
 data UserInsert = UserInsert
   { insertUsername   :: String

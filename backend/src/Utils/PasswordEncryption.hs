@@ -1,4 +1,4 @@
-module Utils.PasswordEncryption where
+module Utils.PasswordEncryption (encryptPassword) where
 
 import Crypto.Hash (hash, Digest, SHA256)
 import Data.ByteArray (convert)
