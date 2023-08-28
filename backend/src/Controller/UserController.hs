@@ -23,6 +23,9 @@ getAllUsersHandler conn = liftIO (UserService.getAllUsers conn)
 insertUserHandler :: Connection -> UserInsert -> Handler ()
 insertUserHandler conn user = liftIO (UserService.insertUser conn user)
 
+insertOrUpdateUserHandler :: Connection -> UserInsert -> Handler (Maybe String)
+insertOrUpdateUserHandler conn user = liftIO (UserService.insertOrUpdateUser conn user)
+
 updateUserHandler :: Connection -> UserUpdate -> Handler ()
 updateUserHandler conn user = liftIO (UserService.updateUser conn user)
 
