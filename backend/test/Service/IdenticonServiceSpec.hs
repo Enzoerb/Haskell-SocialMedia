@@ -18,5 +18,5 @@ spec = do
         IdenticonService.generateIdenticon hash >>= \value1 ->
           quickCheck (value0 == value1)
 
-    prop "is different for different hashes" $
+    it "is different for different hashes" $
       pendingWith "How to guarantee different hashes in the test"

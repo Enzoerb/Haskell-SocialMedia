@@ -47,9 +47,8 @@ common common-all
         , sendgrid-v3
         , wai
         , http-types
-        
+
     default-language: Haskell2010
-    ghc-options:      -Wall
 
 library
     import:             common-all
@@ -101,10 +100,15 @@ Test-Suite api
     type:            exitcode-stdio-1.0
     main-is:         Spec.hs
     hs-source-dirs:  test, src
-    other-modules:   Service.IdenticonService
+    other-modules:   Migrations
+                     Schema
+                     Service.IdenticonService
                      Service.IdenticonServiceSpec
+                     Service.UserService
+                     Service.UserServiceSpec
                      Utils.PasswordEncryption
                      Utils.PasswordEncryptionSpec
+                     Repository.UserRepository
     build-depends:
         hspec
         , hspec-contrib
