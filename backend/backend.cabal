@@ -42,8 +42,12 @@ common common-all
         , wai-cors >=0.2 && <0.3
         , websockets
         , wai-websockets
+        , wreq
+        , lens
+        , sendgrid-v3
         , wai
         , http-types
+        
     default-language: Haskell2010
     ghc-options:      -Wall
 
@@ -61,15 +65,20 @@ library
                         Service.UserService
                         Service.PostService
                         Service.FollowService
+                        Service.PassRecoveryService
+                        Service.IdenticonService
                         Controller.UserController
                         Controller.PostController
                         Controller.FollowController
+                        Controller.PassRecoveryController
+                        Controller.IdenticonController
 
 executable backend
     import:         common-all
     main-is:        Main.hs
     hs-source-dirs: app, src
     other-modules:  Migrations
+                    Websocket
                     Schema
                     API
                     Utils.PasswordEncryption
@@ -79,9 +88,13 @@ executable backend
                     Service.UserService
                     Service.PostService
                     Service.FollowService
+                    Service.PassRecoveryService
+                    Service.IdenticonService
                     Controller.UserController
                     Controller.PostController
                     Controller.FollowController
+                    Controller.PassRecoveryController
+                    Controller.IdenticonController
 
 Test-Suite api
     import:          common-all

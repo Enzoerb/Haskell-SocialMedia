@@ -2,6 +2,7 @@
 import { Dispatch, SetStateAction, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import LoadingSpinner from '../LoadingSpinner';
+import fetchFallbackURL from '@/services/fetchFallback'
 
 export type RegisterInputs = {
   insertEmail: string;
@@ -32,7 +33,7 @@ export default function RegisterForm({
       redirect: 'follow',
     };
 
-    fetch('http://localhost:8080/user', requestOptions)
+    fetchFallbackURL('/user', requestOptions)
       .then((response) => response.text())
       .then((result) => console.log(result))
       .then(() => setIsLoading(false))
@@ -43,7 +44,7 @@ export default function RegisterForm({
       )
       .then(() => setState('LOGIN'))
       .catch((error) => {
-        console.log('error', error);
+        console.log(error)
         alert('Erro ao cadastrar usuário. Tente novamente.');
       });
   };

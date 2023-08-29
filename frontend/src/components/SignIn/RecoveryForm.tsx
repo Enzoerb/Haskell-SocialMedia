@@ -1,9 +1,8 @@
 'use client';
 
-import { User, UserContext } from '@/context/user.context';
+import { User } from '@/context/user.context';
 import fetchFallbackURL from '@/services/fetchFallback';
-import { useRouter } from 'next/navigation';
-import { Dispatch, SetStateAction, useContext } from 'react';
+import { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
 type Inputs = {
@@ -11,7 +10,7 @@ type Inputs = {
   password: string;
 };
 
-export async function hash(str: string) {
+async function hash(str: string) {
   const utf8 = new TextEncoder().encode(str);
   const hashBuffer = await crypto.subtle.digest('SHA-256', utf8);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
@@ -21,13 +20,8 @@ export async function hash(str: string) {
   return hashHex;
 }
 
-export default function LoginForm({
-  setState,
-}: {
-  setState: Dispatch<SetStateAction<'LOGIN' | 'REGISTER'>>;
-}) {
-  const router = useRouter();
-  const { setUser } = useContext(UserContext);
+export default function LoginForm() {
+  const [sent, setSent] = useState(false);
 
   const { register, handleSubmit } = useForm<Inputs>();
   const onSubmit: SubmitHandler<Inputs> = async ({ email, password }) => {
@@ -48,23 +42,30 @@ export default function LoginForm({
       return;
     }
 
-    const passwordHash = await hash(password);
+    const recoveryRes = await fetchFallbackURL(
+      `/recovery/${email}/${data.userUserId}`,
+      {
+        cache: 'no-store',
+      }
+    );
 
-    if (data?.password === passwordHash) {
-      setUser(data);
-
-      return router.push('/home');
-    } else {
-      alert('Senha incorreta! Tente novamente.');
-      return;
+    if (!recoveryRes.ok) {
+      alert('Erro ao recuperar a senha, tente mais tarde!');
+      throw new Error('Failed to get data');
     }
+
+    setSent(true);
+
+    alert(
+      'Link de redefinição de senha enviado! Verifique seu email, inclusive o spam.'
+    );
   };
 
   return (
-    <form className="space-y-4 w-1/2" onSubmit={handleSubmit(onSubmit)}>
+    <form className="space-y-4 w-full p-4" onSubmit={handleSubmit(onSubmit)}>
       <div>
         <label className="block mb-2 text-sm font-medium text-gray-900">
-          Seu e-mail
+          Digite seu email cadastrado!
         </label>
         <input
           type="email"
@@ -74,33 +75,13 @@ export default function LoginForm({
           {...register('email', { required: true })}
         />
       </div>
-      <div>
-        <label className="block mb-2 text-sm font-medium text-gray-900">
-          Senha
-        </label>
-        <input
-          type="password"
-          id="password"
-          placeholder="••••••••"
-          className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg block w-full p-2.5"
-          {...register('password', { required: true })}
-        />
-      </div>
       <button
         type="submit"
         className="w-full text-white bg-primary-600 hover:bg-primary-700 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+        disabled={sent}
       >
-        Entrar
+        Enviar email
       </button>
-      <p className="text-sm font-light text-gray-500">
-        Ainda não possui uma conta?{' '}
-        <span
-          className="font-medium text-primary-600 hover:underline hover:cursor-pointer"
-          onClick={() => setState('REGISTER')}
-        >
-          Cadastre-se
-        </span>
-      </p>
     </form>
   );
 }

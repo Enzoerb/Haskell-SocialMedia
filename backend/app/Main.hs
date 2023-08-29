@@ -10,6 +10,7 @@ import qualified Controller.UserController as UserController
 import qualified Controller.PostController as PostController
 import qualified Controller.FollowController as FollowController
 import qualified Controller.IdenticonController as IdenticonController
+import qualified Controller.PassRecoveryController as PassRecoveryController
 import Control.Concurrent (forkIO)
 import Control.Monad (void)
 import qualified Migrations
@@ -61,6 +62,9 @@ main = do
                            :<|> FollowController.insertFollowHandler conn
                            :<|> FollowController.deleteFollowHandler conn
                            :<|> IdenticonController.generateIdenticonHandler
+                           :<|> IdenticonController.generateIdenticonHandler "b20397a3-5f0b-4b4b-8d35-5a7b35a58b2a"
+                           :<|> PassRecoveryController.requestPassRecoveryHandler
+                           :<|> PassRecoveryController.resetPasswordHandler conn
                           ))
 
   -- Close the connection

@@ -1,8 +1,10 @@
+import fetchFallbackURL from "@/services/fetchFallback";
+
 export async function getProfileImage(id: string) {
-  const res = await fetch(`http://localhost:8080/identicon/${id}`);
+  const res = await fetchFallbackURL(`/identicon/${id}`);
 
   if (!res.ok) {
-    throw new Error('Failed to fetch data');
+    throw new Error('Failed to get data');
   }
 
   return res.text();

@@ -5,26 +5,27 @@ import Actions from '@/components/Profile/Actions';
 import Photo from '@/components/Profile/Photo/Photo.server';
 import TweetCard from '@/components/TweetCard';
 import { User } from '@/context/user.context';
+import fetchFallbackURL from '@/services/fetchFallback';
 
 async function getUserInfo(id: string) {
-  const res = await fetch(`http://localhost:8080/user/id/${id}`, {
+  const res = await fetchFallbackURL(`/user/id/${id}`, {
     cache: 'no-store',
   });
 
   if (!res.ok) {
-    throw new Error('Failed to fetch data');
+    throw new Error('Failed to get data');
   }
 
   return res.json() as Promise<User>;
 }
 
 async function getUserTweets(id: string) {
-  const res = await fetch(`http://localhost:8080/posts/user/${id}`, {
+  const res = await fetchFallbackURL(`/posts/user/${id}`, {
     cache: 'no-store',
   });
 
   if (!res.ok) {
-    throw new Error('Failed to fetch data');
+    throw new Error('Failed to get data');
   }
 
   return res.json() as Promise<Tweet[]>;

@@ -3,7 +3,6 @@ import MainPanel from '@/components/Panels/Main';
 import RightPanel from '@/components/Panels/Right';
 import TweetForm from '@/components/TweetForm';
 
-
 export default function Home() {
   return (
     <main className="flex flex-row overflow-hidden">
@@ -15,11 +14,10 @@ export default function Home() {
         <TweetForm />
         <MainPanel />
       </div>
-      
+
       <div className="w-1/4 border-l-2">
         <LeftPanel />
       </div>
-
     </main>
   );
 }
