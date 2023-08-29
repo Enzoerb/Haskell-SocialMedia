@@ -2,9 +2,6 @@
 module Main where
 
 import Servant
-import Servant.API
-import Data.Text (Text)
-import Data.Aeson (ToJSON, FromJSON)
 import Network.Wai.Middleware.Cors
 import Network.Wai.Handler.Warp (run)
 import API (api)
@@ -45,7 +42,7 @@ main = do
   -- Run the Servant server
   putStrLn "Running server on port 8080.."
   hFlush stdout  -- Flush the buffer to ensure immediate display
-  run 8080 $ cors (const $ Just $ frontCors) $ (serve API.api (
+  run 8080 $ cors (const $ Just frontCors) (serve API.api (
                                 UserController.getAllUsersHandler conn
                            :<|> UserController.getUserByUsernameHandler conn
                            :<|> UserController.getUserByEmailHandler conn
@@ -63,11 +60,11 @@ main = do
                            :<|> FollowController.getFollowingHandler conn
                            :<|> FollowController.getFollowersHandler conn
                            :<|> FollowController.insertFollowHandler conn
-                           :<|> (FollowController.deleteFollowHandler conn)
-                           :<|> (IdenticonController.generateIdenticonHandler)
-                           :<|> (IdenticonController.generateIdenticonHandler "b20397a3-5f0b-4b4b-8d35-5a7b35a58b2a")
-                           :<|> (PassRecoveryController.requestPassRecoveryHandler)
-                           :<|> (PassRecoveryController.resetPasswordHandler conn)
+                           :<|> FollowController.deleteFollowHandler conn
+                           :<|> IdenticonController.generateIdenticonHandler
+                           :<|> IdenticonController.generateIdenticonHandler "b20397a3-5f0b-4b4b-8d35-5a7b35a58b2a"
+                           :<|> PassRecoveryController.requestPassRecoveryHandler
+                           :<|> PassRecoveryController.resetPasswordHandler conn
                           ))
 
   -- Close the connection

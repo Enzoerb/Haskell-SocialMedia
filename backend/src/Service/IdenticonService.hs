@@ -2,7 +2,6 @@ module Service.IdenticonService (generateIdenticon) where
 
 import Data.Char (ord)
 import Codec.Picture
-import Codec.Picture.Types
 import Data.ByteString.Lazy (toStrict)
 import Data.ByteString.Base64 (encode)
 import qualified Data.ByteString.Char8 as BS

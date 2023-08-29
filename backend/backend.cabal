@@ -21,33 +21,7 @@ maintainer:         enzoerbert@gmail.com
 -- category:
 extra-source-files: CHANGELOG.md
 
-executable backend
-    main-is:             Main.hs
-    hs-source-dirs:      app, src
-    other-modules:       Migrations
-                         Websocket
-                         Schema
-                         API
-                         Utils.PasswordEncryption
-                         Repository.UserRepository
-                         Repository.PostRepository
-                         Repository.FollowRepository
-                         Service.UserService
-                         Service.PostService
-                         Service.FollowService
-                         Service.PassRecoveryService
-                         Service.IdenticonService
-                         Controller.UserController
-                         Controller.PostController
-                         Controller.FollowController
-                         Controller.PassRecoveryController
-                         Controller.IdenticonController
-
-    -- Modules included in this executable, other than Main.
-    -- other-modules:
-
-    -- LANGUAGE extensions used by modules in this package.
-    -- other-extensions:
+common common-all
     build-depends:
         base >= 4.14 && < 5
         , postgresql-simple
@@ -73,4 +47,67 @@ executable backend
         , sendgrid-v3
         , wai
         , http-types
+        
     default-language: Haskell2010
+    ghc-options:      -Wall
+
+library
+    import:             common-all
+    hs-source-dirs:     src
+    exposed-modules:    Migrations
+                        Websocket
+                        Schema
+                        API
+                        Utils.PasswordEncryption
+                        Repository.UserRepository
+                        Repository.PostRepository
+                        Repository.FollowRepository
+                        Service.UserService
+                        Service.PostService
+                        Service.FollowService
+                        Service.PassRecoveryService
+                        Service.IdenticonService
+                        Controller.UserController
+                        Controller.PostController
+                        Controller.FollowController
+                        Controller.PassRecoveryController
+                        Controller.IdenticonController
+
+executable backend
+    import:         common-all
+    main-is:        Main.hs
+    hs-source-dirs: app, src
+    other-modules:  Migrations
+                    Websocket
+                    Schema
+                    API
+                    Utils.PasswordEncryption
+                    Repository.UserRepository
+                    Repository.PostRepository
+                    Repository.FollowRepository
+                    Service.UserService
+                    Service.PostService
+                    Service.FollowService
+                    Service.PassRecoveryService
+                    Service.IdenticonService
+                    Controller.UserController
+                    Controller.PostController
+                    Controller.FollowController
+                    Controller.PassRecoveryController
+                    Controller.IdenticonController
+
+Test-Suite api
+    import:          common-all
+    type:            exitcode-stdio-1.0
+    main-is:         Spec.hs
+    hs-source-dirs:  test, src
+    other-modules:   Service.IdenticonService
+                     Service.IdenticonServiceSpec
+                     Utils.PasswordEncryption
+                     Utils.PasswordEncryptionSpec
+    build-depends:
+        hspec
+        , hspec-contrib
+        , QuickCheck
+        , HUnit
+    build-tool-depends: hspec-discover:hspec-discover
