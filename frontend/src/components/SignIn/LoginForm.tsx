@@ -1,6 +1,7 @@
 'use client';
 
 import { User, UserContext } from '@/context/user.context';
+import fetchFallbackURL from '@/services/fetchFallback';
 import { useRouter } from 'next/navigation';
 import { Dispatch, SetStateAction, useContext } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -30,12 +31,12 @@ export default function LoginForm({
 
   const { register, handleSubmit } = useForm<Inputs>();
   const onSubmit: SubmitHandler<Inputs> = async ({ email, password }) => {
-    const res = await fetch(`http://localhost:8080/user/email/${email}`, {
+    const res = await fetchFallbackURL(`/user/email/${email}`, {
       cache: 'no-store',
     });
 
     if (!res.ok) {
-      throw new Error('Failed to fetch data');
+      throw new Error('Failed to get data');
     }
 
     const data = (await res.json()) as User;

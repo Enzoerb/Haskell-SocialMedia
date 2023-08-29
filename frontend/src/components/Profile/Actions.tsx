@@ -5,14 +5,15 @@ import Modal from '@/components/Modal';
 import { User, UserContext } from '@/context/user.context';
 import { useContext, useEffect, useState } from 'react';
 import EditForm from '../EditForm';
+import fetchFallbackURL from '@/services/fetchFallback';
 
 async function getFollowing(userId: string, profileUserId: string) {
-  const res = await fetch(`http://localhost:8080/follows/following/${userId}`, {
+  const res = await fetchFallbackURL(`/follows/following/${userId}`, {
     cache: 'no-store',
   });
 
   if (!res.ok) {
-    throw new Error('Failed to fetch data');
+    throw new Error('Failed to get data');
   }
 
   const data = (await res.json()) as User[];
@@ -58,7 +59,7 @@ export default function Actions({ userId }: { userId: string }) {
       redirect: 'follow',
     };
 
-    fetch('http://localhost:8080/follow', requestOptions)
+    fetchFallbackURL('/follow', requestOptions)
       .then((response) => response.text())
       .then((result) => console.log(result))
       .then(() => setFollowing(true))
@@ -76,8 +77,8 @@ export default function Actions({ userId }: { userId: string }) {
         redirect: 'follow',
       };
 
-      fetch(
-        `http://localhost:8080/follow?user_followed=${userId}&user_follower=${user?.userUserId}`,
+      fetchFallbackURL(
+        `/follow?user_followed=${userId}&user_follower=${user?.userUserId}`,
         requestOptions
       )
         .then((response) => response.text())

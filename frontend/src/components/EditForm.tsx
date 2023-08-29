@@ -1,6 +1,7 @@
 'use client';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import { User, UserContext } from '@/context/user.context';
+import fetchFallbackURL from '@/services/fetchFallback';
 import { useRouter } from 'next/navigation';
 import { startTransition, useContext, useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -44,7 +45,7 @@ export default function EditForm() {
         headers: headers,
       };
 
-      fetch(`http://localhost:8080/user/${user?.userUserId}`, requestOptions)
+      fetchFallbackURL(`/user/${user?.userUserId}`, requestOptions)
         .then((response) => response.json())
         .then((result) => console.log(result))
         .then(() => alert('Conta excluída com sucesso.'))
@@ -78,7 +79,7 @@ export default function EditForm() {
       body: JSON.stringify(data),
     };
 
-    fetch('http://localhost:8080/user', requestOptions)
+    fetchFallbackURL('/user', requestOptions)
       .then((response) => response.text())
       .then((result) => console.log(result))
       .then(() => alert('Informações alteradas com sucesso.'))

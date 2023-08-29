@@ -2,14 +2,15 @@
 
 import Photo from '@/components/Profile/Photo/Photo.client';
 import { User } from '@/context/user.context';
+import fetchFallbackURL from '@/services/fetchFallback';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 async function getFollowers(id: string) {
-  const res = await fetch(`http://localhost:8080/follows/followers/${id}`);
+  const res = await fetchFallbackURL(`/follows/followers/${id}`);
 
   if (!res.ok) {
-    throw new Error('Failed to fetch data');
+    throw new Error('Failed to get data');
   }
 
   return res.json() as Promise<User[]>;

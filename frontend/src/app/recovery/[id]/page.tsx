@@ -4,6 +4,7 @@ import { hash } from '@/components/SignIn/LoginForm';
 import { User } from '@/context/user.context';
 import { useRouter } from 'next/navigation';
 import { SubmitHandler, useForm } from 'react-hook-form';
+import fetchFallbackURL from '@/services/fetchFallback';
 
 type Inputs = {
   email: string;
@@ -15,12 +16,12 @@ export default function User({ params }: { params: { id: string } & unknown }) {
   const router = useRouter();
 
   const onSubmit: SubmitHandler<Inputs> = async ({ email, password }) => {
-    const res = await fetch(`http://localhost:8080/user/email/${email}`, {
+    const res = await fetchFallbackURL(`/user/email/${email}`, {
       cache: 'no-store',
     });
 
     if (!res.ok) {
-      throw new Error('Failed to fetch data');
+      throw new Error('Failed to get data');
     }
 
     const data = (await res.json()) as User;
@@ -44,7 +45,7 @@ export default function User({ params }: { params: { id: string } & unknown }) {
       }),
     };
 
-    fetch('http://localhost:8080/recovery', requestOptions)
+    fetchFallbackURL('/recovery', requestOptions)
       .then((response) => response.text())
       .then((result) => console.log(result))
       .then(() => alert('Senha alterada com sucesso!'))

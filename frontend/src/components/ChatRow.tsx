@@ -5,14 +5,15 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 import { User } from '@/context/user.context';
+import fetchFallbackURL from '@/services/fetchFallback';
 
 export async function getUserInfo(id: string) {
-  const res = await fetch(`http://localhost:8080/user/id/${id}`, {
+  const res = await fetchFallbackURL(`/user/id/${id}`, {
     cache: 'no-store',
   });
 
   if (!res.ok) {
-    throw new Error('Failed to fetch data');
+    throw new Error('Failed to get data');
   }
 
   return res.json() as Promise<User>;

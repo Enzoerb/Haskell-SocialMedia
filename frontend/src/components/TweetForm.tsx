@@ -1,6 +1,7 @@
 'use client';
 
 import { UserContext } from '@/context/user.context';
+import fetchFallbackURL from '@/services/fetchFallback';
 import { useRouter } from 'next/navigation';
 import { useContext, useTransition } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -37,7 +38,7 @@ export default function TweetForm() {
       redirect: 'follow',
     };
 
-    fetch('http://localhost:8080/post', requestOptions)
+    fetchFallbackURL('/post', requestOptions)
       .then((response) => response.text())
       .then((result) => console.log(result))
       .then(() => {
@@ -48,23 +49,9 @@ export default function TweetForm() {
           router.refresh();
         });
       })
-      .catch((error1) => {
-        console.log('error', error1);
-        fetch('http://backend:8080/post', requestOptions)
-          .then((response) => response.text())
-          .then((result) => console.log(result))
-          .then(() => {
-            reset();
-          })
-          .then(() => {
-            startTransition(() => {
-              router.refresh();
-            });
-          })
-          .catch((error2) => {
-            console.log('error', error2);
-            alert('Erro ao postar uma λ. Tente novamente.');
-          });
+      .catch((error2) => {
+        console.log('error', error2);
+        alert('Erro ao postar uma λ. Tente novamente.');
       });
   };
 

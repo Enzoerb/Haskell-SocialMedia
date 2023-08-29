@@ -1,6 +1,7 @@
 'use client';
 
 import { User } from '@/context/user.context';
+import fetchFallbackURL from '@/services/fetchFallback';
 import { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
@@ -24,12 +25,12 @@ export default function LoginForm() {
 
   const { register, handleSubmit } = useForm<Inputs>();
   const onSubmit: SubmitHandler<Inputs> = async ({ email, password }) => {
-    const res = await fetch(`http://localhost:8080/user/email/${email}`, {
+    const res = await fetchFallbackURL(`/user/email/${email}`, {
       cache: 'no-store',
     });
 
     if (!res.ok) {
-      throw new Error('Failed to fetch data');
+      throw new Error('Failed to get data');
     }
 
     const data = (await res.json()) as User;
@@ -41,8 +42,8 @@ export default function LoginForm() {
       return;
     }
 
-    const recoveryRes = await fetch(
-      `http://localhost:8080/recovery/${email}/${data.userUserId}`,
+    const recoveryRes = await fetchFallbackURL(
+      `/recovery/${email}/${data.userUserId}`,
       {
         cache: 'no-store',
       }
@@ -50,7 +51,7 @@ export default function LoginForm() {
 
     if (!recoveryRes.ok) {
       alert('Erro ao recuperar a senha, tente mais tarde!');
-      throw new Error('Failed to fetch data');
+      throw new Error('Failed to get data');
     }
 
     setSent(true);
