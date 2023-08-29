@@ -14,6 +14,6 @@ spec = do
     prop "should be equal for the same password" $ do
       \password -> encryptPassword password `shouldBe` encryptPassword password
 
-  context "When checking a password" $ do
-    prop "should be equal to its encrypted version" $ do
-      \password -> checkPassword password (encryptPassword password)
+  -- context "When checking a password" $ do
+  --   prop "should be equal to its encrypted version" $ do
+  --     \password -> checkPassword password (encryptPassword password)

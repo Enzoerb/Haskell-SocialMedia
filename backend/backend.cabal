@@ -101,8 +101,12 @@ Test-Suite api
     type:            exitcode-stdio-1.0
     main-is:         Spec.hs
     hs-source-dirs:  test, src
-    other-modules:   Service.IdenticonService
+    other-modules:   Migrations
+                     Schema
+                     Service.IdenticonService
                      Service.IdenticonServiceSpec
+                     Service.UserService
+                     Service.UserServiceSpec
                      Utils.PasswordEncryption
                      Utils.PasswordEncryptionSpec
     build-depends:
